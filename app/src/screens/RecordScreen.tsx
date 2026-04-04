@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f4f4f5',
   },
   title: {
-    fontSize: 36,
+    fontSize: 22,
     fontWeight: '700',
     color: '#14151e',
     marginTop: 6,
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   voiceTitle: {
     color: '#2f339f',
     fontWeight: '700',
-    fontSize: 17,
+    fontSize: 12,
   },
   voiceInputWrap: {
     position: 'relative',
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   parseButtonText: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: 11,
   },
   fieldGroup: {
     gap: 8,
@@ -365,16 +365,16 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: '700',
     color: '#30303a',
-    fontSize: 32,
+    fontSize: 18,
   },
   muted: {
     color: '#74757d',
     fontWeight: '500',
-    fontSize: 20,
+    fontSize: 14,
   },
   noteOptional: {
     color: '#92939a',
-    fontSize: 22,
+    fontSize: 14,
     fontWeight: '500',
   },
   input: {
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#fff',
     color: '#10111a',
-    fontSize: 26,
+    fontSize: 16,
     fontWeight: '600',
   },
   dateRow: {
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 14,
     top: 16,
-    fontSize: 22,
+    fontSize: 14,
     color: '#11121b',
     fontWeight: '700',
   },
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: '#fff',
     minHeight: 54,
-    fontSize: 26,
+    fontSize: 16,
     color: '#1b1c26',
     fontWeight: '600',
     textAlign: 'center',
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     backgroundColor: '#fff',
     color: '#1b1c26',
-    fontSize: 22,
+    fontSize: 14,
   },
   saveButton: {
     borderRadius: 14,
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 28,
+    fontSize: 18,
   },
   buttonDisabled: {
     opacity: 0.4,
