@@ -20,8 +20,26 @@ const parsedSchema = z.array(
       return null;
     }, z.number().positive().nullable().optional()),
     isBodyweight: z.boolean().optional(),
-    reps: z.number().int().positive(),
-    sets: z.number().int().positive(),
+    reps: z.preprocess((val) => {
+      if (val === null || val === undefined) return null;
+      if (typeof val === "number") return Math.trunc(val);
+      if (typeof val === "string") {
+        const cleaned = val.replace(/[^0-9+-]/g, "").trim();
+        const num = Number(cleaned);
+        return Number.isFinite(num) ? Math.trunc(num) : null;
+      }
+      return null;
+    }, z.number().int().positive()),
+    sets: z.preprocess((val) => {
+      if (val === null || val === undefined) return null;
+      if (typeof val === "number") return Math.trunc(val);
+      if (typeof val === "string") {
+        const cleaned = val.replace(/[^0-9+-]/g, "").trim();
+        const num = Number(cleaned);
+        return Number.isFinite(num) ? Math.trunc(num) : null;
+      }
+      return null;
+    }, z.number().int().positive()),
     notes: z.string().nullable().optional(),
   }),
 );

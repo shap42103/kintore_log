@@ -80,7 +80,7 @@ export function RecordScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <TrainingForm exercises={exercises} onAnalyze={onAnalyze} onSave={onSaveForm} />
+      <TrainingForm exercises={exercises} onAnalyze={onAnalyze} onSave={onSaveForm} debugShowParsed={true} />
     </View>
   );
 }

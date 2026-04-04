@@ -2,7 +2,7 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import type { Exercise } from '../types';
 
@@ -24,9 +24,12 @@ type Props = {
   saveLabel?: string;
   onClose?: () => void;
   metricFlexes?: { weight?: number; reps?: number; sets?: number };
+  debugShowParsed?: boolean;
 };
 
-export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSave, saveLabel = '記録を保存する', onClose, metricFlexes }: Props) {
+export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSave, saveLabel = '記録を保存する', onClose, metricFlexes, debugShowParsed }: Props) {
+  const [debugCandidate, setDebugCandidate] = useState<Partial<Values> | null>(null);
+  const [debugModalVisible, setDebugModalVisible] = useState(false);
   const [date, setDate] = useState(initial.date ?? new Date().toISOString().slice(0, 10));
   // default to 0 = no selection so Record screen starts with empty exercise
   const [exerciseId, setExerciseId] = useState<number>(initial.exerciseId ?? 0);
@@ -119,9 +122,14 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
 
   const applyParsed = (first: any) => {
     if (!first) return;
-    setDate(first.date);
-    const matched = exercises.find((e) => e.name === first.exercise);
-    if (matched) setExerciseId(matched.id);
+    setDate(first.date ?? date);
+    // Accept either exerciseId (from caller) or exercise name (from parser)
+    if (typeof first.exerciseId === 'number' && first.exerciseId > 0) {
+      setExerciseId(Number(first.exerciseId));
+    } else {
+      const matched = exercises.find((e) => e.name === first.exercise);
+      if (matched) setExerciseId(matched.id);
+    }
     // If parsed indicates bodyweight, clear weight regardless of parsed weight
     if (first.isBodyweight) {
       setWeight('');
@@ -132,6 +140,16 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
     setReps(Number(first.reps ?? 0));
     setSets(Number(first.sets ?? 0));
     setNotes(first.notes ?? '');
+  };
+
+  // Debug modal: show parsed result for manual apply/inspect
+  const handleDebugApply = (apply: boolean) => {
+    if (!debugCandidate) return;
+    if (apply) {
+      applyParsed(debugCandidate as any);
+    }
+    setDebugCandidate(null);
+    setDebugModalVisible(false);
   };
 
   return (
@@ -167,7 +185,13 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
             setIsParsing(true);
             try {
               await onAnalyze(voiceText, (parsed) => {
-                applyParsed(parsed);
+                // If debug modal enabled, show parsed data first for confirmation
+                if ((debugShowParsed as unknown as boolean) === true) {
+                  setDebugCandidate(parsed);
+                  setDebugModalVisible(true);
+                } else {
+                  applyParsed(parsed);
+                }
               });
             } catch (e) {
               const message = e instanceof Error ? e.message : '解析に失敗しました。';
@@ -311,6 +335,23 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
           <Text style={{ color: '#333' }}>閉じる</Text>
         </Pressable>
       ) : null}
+      <Modal visible={debugModalVisible} animationType="slide" onRequestClose={() => setDebugModalVisible(false)}>
+        <ScrollView contentContainerStyle={{ padding: 16 }}>
+          <Text style={{ fontWeight: '700', fontSize: 18, marginBottom: 8 }}>解析結果（デバッグ）</Text>
+          <Text style={{ fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', backgroundColor: '#f6f6f6', padding: 12, borderRadius: 8 }}>{JSON.stringify(debugCandidate ?? {}, null, 2)}</Text>
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+            <Pressable style={[styles.saveButton, { flex: 1 }]} onPress={() => handleDebugApply(true)}>
+              <Text style={styles.saveButtonText}>適用する</Text>
+            </Pressable>
+            <Pressable style={[styles.saveButton, { flex: 1, backgroundColor: '#ddd' }]} onPress={() => handleDebugApply(false)}>
+              <Text style={{ color: '#333', fontWeight: '700' }}>破棄</Text>
+            </Pressable>
+          </View>
+          <Pressable style={{ marginTop: 12 }} onPress={() => setDebugModalVisible(false)}>
+            <Text style={{ color: '#666' }}>閉じる</Text>
+          </Pressable>
+        </ScrollView>
+      </Modal>
     </View>
   );
 }

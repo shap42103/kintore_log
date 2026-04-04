@@ -407,6 +407,7 @@ export function HistoryScreen() {
                 }}
                 onClose={() => setEditing(null)}
                 saveLabel="保存"
+                  debugShowParsed={true}
               />
           ) : null}
         </ScrollView>
