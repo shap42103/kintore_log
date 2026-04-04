@@ -54,11 +54,13 @@ export default function App() {
       <Tab.Navigator
         screenOptions={{
           headerTitleStyle: {
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: '700',
           },
           headerStyle: {
-            backgroundColor: '#f4f4f5',
+            backgroundColor: '#ffffff',
+            borderBottomColor: '#e6e6ea',
+            borderBottomWidth: 1,
           },
           headerTintColor: '#151721',
           sceneStyle: {
