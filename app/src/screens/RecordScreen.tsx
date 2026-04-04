@@ -135,7 +135,7 @@ export function RecordScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.voiceBlock}>
         <View style={styles.voiceHeader}>
-          <Feather name="mic" size={16} color="#3f3aa8" />
+          <Feather name="file-text" size={16} color="#3f3aa8" />
           <Text style={styles.voiceTitle}>トレーニング内容</Text>
         </View>
 
