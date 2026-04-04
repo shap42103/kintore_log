@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
@@ -190,23 +191,28 @@ export function HistoryScreen() {
     return to < from;
   }, [fromDate, toDate]);
 
+  const isFilterApplied = useMemo(() => {
+    return !!(exerciseFilter || fromDate || toDate);
+  }, [exerciseFilter, fromDate, toDate]);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.block}>
-        <Text style={styles.label}>カレンダー</Text>
-        <Calendar markedDates={markedDates} onDayPress={onDayPress} />
+      <View style={styles.iconBlock}>
+        <View style={styles.filterIconRow}>
+          <Pressable style={styles.filterIconButton} onPress={() => setIsFilterOpen(true)} accessibilityLabel="フィルタ">
+            <View style={styles.iconWithDot}>
+              <Ionicons name="funnel-outline" size={20} color="#175fe8" />
+              {isFilterApplied ? <View style={styles.filterDot} /> : null}
+            </View>
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.block}>
-        <Text style={styles.label}>フィルター</Text>
-        <View style={styles.filterSummaryRow}>
-          <Text style={styles.filterSummaryText}>{fromDate || '開始日未選択'} ～ {toDate || '終了日未選択'}</Text>
-          <Text style={styles.filterSummaryText}>{exerciseFilter ? (exercises.find(e => e.id === exerciseFilter)?.name ?? '種目選択') : '全種目'}</Text>
-        </View>
-        <Pressable style={[styles.button, styles.buttonPrimary]} onPress={() => setIsFilterOpen(true)}>
-          <Text style={styles.buttonText}>フィルタを編集</Text>
-        </Pressable>
+        <Calendar markedDates={markedDates} onDayPress={onDayPress} />
       </View>
+
+      {/* filter summary removed; filter modal still available via icons above calendar */}
 
       {isFilterOpen && (
         <Modal visible={isFilterOpen} animationType="slide" transparent onRequestClose={() => setIsFilterOpen(false)}>
@@ -312,20 +318,23 @@ export function HistoryScreen() {
         <Text style={styles.label}>履歴一覧 ({histories.length}件)</Text>
         {histories.map((item) => (
           <View key={item.id} style={styles.card}>
-            <Text style={styles.cardTitle}>{item.exerciseName}</Text>
+            <View style={styles.cardHeaderRow}>
+              <Text style={styles.cardTitle}>{item.exerciseName}</Text>
+              <View style={styles.actionRowRight}>
+                <Pressable style={styles.actionIconButton} onPress={() => openEdit(item)} accessibilityLabel="編集">
+                  <Ionicons name="pencil" size={18} color="#243b53" />
+                </Pressable>
+                <Pressable style={styles.actionIconButton} onPress={() => removeHistory(item.id)} accessibilityLabel="削除">
+                  <Ionicons name="trash" size={18} color="#cc2b52" />
+                </Pressable>
+              </View>
+            </View>
+
             <Text style={styles.cardText}>{item.date}</Text>
             <Text style={styles.cardText}>
               {item.weight}kg / {item.reps}回 / {item.sets}セット
             </Text>
             <Text style={styles.cardText}>備考: {item.notes || 'なし'}</Text>
-            <View style={styles.row}>
-              <Pressable style={[styles.button, styles.buttonGhost]} onPress={() => openEdit(item)}>
-                <Text style={styles.buttonGhostText}>編集</Text>
-              </Pressable>
-              <Pressable style={[styles.button, styles.buttonDanger]} onPress={() => removeHistory(item.id)}>
-                <Text style={styles.buttonText}>削除</Text>
-              </Pressable>
-            </View>
           </View>
         ))}
       </View>
@@ -488,6 +497,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  actionRowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   button: {
     borderRadius: 8,
     minHeight: 42,
@@ -513,6 +531,48 @@ const styles = StyleSheet.create({
   buttonGhostText: {
     color: '#243b53',
     fontWeight: '600',
+  },
+  filterIconRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 8,
+  },
+  filterIconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#e6eef8',
+  },
+  iconBlock: {
+    marginBottom: 8,
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+  },
+  iconWithDot: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  filterDot: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#d64545',
+  },
+  actionIconButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
   },
   buttonDisabled: {
     opacity: 0.5,
