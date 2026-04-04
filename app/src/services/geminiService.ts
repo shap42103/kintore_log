@@ -11,7 +11,7 @@ const parsedSchema = z.array(
     weight: z.number().positive(),
     reps: z.number().int().positive(),
     sets: z.number().int().positive(),
-    notes: z.string().optional(),
+    notes: z.string().nullable().optional(),
   }),
 );
 
@@ -86,12 +86,12 @@ export async function parseTrainingWithGemini(
 入力:\n${inputText}`;
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
       body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        contents: [{ parts: [{ text: prompt }] }],
       }),
     },
   );
