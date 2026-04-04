@@ -8,7 +8,8 @@ export type History = {
   date: string;
   exerciseId: number;
   exerciseName: string;
-  weight: number;
+  weight: number | null;
+  isBodyweight: boolean;
   reps: number;
   sets: number;
   notes: string;
@@ -17,7 +18,8 @@ export type History = {
 export type HistoryInput = {
   date: string;
   exerciseId: number;
-  weight: number;
+  weight: number | null;
+  isBodyweight?: boolean;
   reps: number;
   sets: number;
   notes: string;
@@ -32,7 +34,7 @@ export type HistoryFilter = {
 export type ParsedTrainingItem = {
   date: string;
   exercise: string;
-  weight: number;
+  weight: number | null;
   reps: number;
   sets: number;
   notes: string;

@@ -8,7 +8,7 @@ const parsedSchema = z.array(
   z.object({
     date: z.string().optional(),
     exercise: z.string().min(1),
-    weight: z.number().positive(),
+    weight: z.number().positive().nullable().optional(),
     reps: z.number().int().positive(),
     sets: z.number().int().positive(),
     notes: z.string().nullable().optional(),
@@ -125,7 +125,7 @@ export async function parseTrainingWithGemini(
           ? item.date
           : toTodayDateString(),
       exercise: mappedExercise,
-      weight: item.weight,
+      weight: item.weight ?? null,
       reps: item.reps,
       sets: item.sets,
       notes: item.notes?.trim() ?? "",

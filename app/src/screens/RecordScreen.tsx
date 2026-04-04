@@ -46,7 +46,8 @@ export function RecordScreen() {
       applyParsed({
         date: first.date,
         exerciseId: matchedExercise.id,
-        weight: String(first.weight),
+        weight: String(first.weight ?? ''),
+        isBodyweight: !!first.isBodyweight,
         reps: Number(first.reps),
         sets: Number(first.sets),
         notes: first.notes ?? '',
@@ -57,13 +58,14 @@ export function RecordScreen() {
     }
   }, [exercises]);
 
-  const onSaveForm = useCallback(async (vals: { date: string; exerciseId: number; weight: string; reps: number; sets: number; notes: string }) => {
+  const onSaveForm = useCallback(async (vals: { date: string; exerciseId: number; weight: string; isBodyweight?: boolean; reps: number; sets: number; notes: string }) => {
     try {
       await addHistories([
         {
           date: vals.date,
           exerciseId: vals.exerciseId,
-          weight: Number(vals.weight),
+          weight: vals.isBodyweight ? null : Number(vals.weight),
+          isBodyweight: !!vals.isBodyweight,
           reps: vals.reps,
           sets: vals.sets,
           notes: vals.notes,

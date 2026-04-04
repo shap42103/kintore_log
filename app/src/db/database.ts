@@ -11,7 +11,6 @@ export async function initializeDatabase() {
   await db.execAsync(`
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
-
     CREATE TABLE IF NOT EXISTS exercises (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE
@@ -21,7 +20,8 @@ export async function initializeDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       date TEXT NOT NULL,
       exercise_id INTEGER NOT NULL,
-      weight REAL NOT NULL,
+      weight REAL,
+      is_bodyweight INTEGER NOT NULL DEFAULT 0,
       reps INTEGER NOT NULL,
       sets INTEGER NOT NULL,
       notes TEXT NOT NULL DEFAULT '',
@@ -32,11 +32,42 @@ export async function initializeDatabase() {
     CREATE INDEX IF NOT EXISTS idx_histories_exercise_id ON histories(exercise_id);
   `);
 
+  // Migration: if older DB schema exists without is_bodyweight or weight nullable, migrate to new schema
+  // We use user_version to track migration state.
+  const userVersionRows = await db.getAllAsync<{ user_version: number }>(
+    "PRAGMA user_version",
+  );
+  const userVersion = userVersionRows?.[0]?.user_version ?? 0;
+  if (userVersion < 2) {
+    // Create new table and copy data
+    await db.execAsync(`
+      BEGIN TRANSACTION;
+      CREATE TABLE IF NOT EXISTS histories_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT NOT NULL,
+        exercise_id INTEGER NOT NULL,
+        weight REAL,
+        is_bodyweight INTEGER NOT NULL DEFAULT 0,
+        reps INTEGER NOT NULL,
+        sets INTEGER NOT NULL,
+        notes TEXT NOT NULL DEFAULT '',
+        FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE RESTRICT
+      );
+      INSERT INTO histories_new (id, date, exercise_id, weight, reps, sets, notes, is_bodyweight)
+        SELECT id, date, exercise_id, weight, reps, sets, notes, 0 FROM histories;
+      DROP TABLE IF EXISTS histories;
+      ALTER TABLE histories_new RENAME TO histories;
+      CREATE INDEX IF NOT EXISTS idx_histories_date ON histories(date);
+      CREATE INDEX IF NOT EXISTS idx_histories_exercise_id ON histories(exercise_id);
+      PRAGMA user_version = 2;
+      COMMIT;
+    `);
+  }
+
   for (const name of INITIAL_EXERCISES) {
-    await db.runAsync(
-      "INSERT OR IGNORE INTO exercises (name) VALUES (?)",
-      [name],
-    );
+    await db.runAsync("INSERT OR IGNORE INTO exercises (name) VALUES (?)", [
+      name,
+    ]);
   }
 }
 
@@ -55,9 +86,7 @@ export async function getExercises() {
 
 export async function addExercise(name: string) {
   const db = await dbPromise;
-  await db.runAsync("INSERT INTO exercises (name) VALUES (?)", [
-    name.trim(),
-  ]);
+  await db.runAsync("INSERT INTO exercises (name) VALUES (?)", [name.trim()]);
 }
 
 export async function updateExercise(id: number, name: string) {
@@ -102,7 +131,8 @@ export async function getHistories(filter: HistoryFilter = {}) {
     date: string;
     exercise_id: number;
     exercise_name: string;
-    weight: number;
+    weight: number | null;
+    is_bodyweight: number;
     reps: number;
     sets: number;
     notes: string;
@@ -114,6 +144,7 @@ export async function getHistories(filter: HistoryFilter = {}) {
         h.exercise_id,
         e.name AS exercise_name,
         h.weight,
+        h.is_bodyweight,
         h.reps,
         h.sets,
         h.notes
@@ -130,7 +161,8 @@ export async function getHistories(filter: HistoryFilter = {}) {
     date: row.date,
     exerciseId: row.exercise_id,
     exerciseName: row.exercise_name,
-    weight: row.weight,
+    weight: row.weight === null ? null : row.weight,
+    isBodyweight: !!row.is_bodyweight,
     reps: row.reps,
     sets: row.sets,
     notes: row.notes,
@@ -147,13 +179,14 @@ export async function addHistories(items: HistoryInput[]) {
     for (const item of items) {
       await tx.runAsync(
         `
-          INSERT INTO histories (date, exercise_id, weight, reps, sets, notes)
-          VALUES (?, ?, ?, ?, ?, ?)
+          INSERT INTO histories (date, exercise_id, weight, is_bodyweight, reps, sets, notes)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
         `,
         [
           item.date,
           item.exerciseId,
           item.weight,
+          item.isBodyweight ? 1 : 0,
           item.reps,
           item.sets,
           item.notes,
@@ -168,13 +201,14 @@ export async function updateHistory(id: number, item: HistoryInput) {
   await db.runAsync(
     `
       UPDATE histories
-      SET date = ?, exercise_id = ?, weight = ?, reps = ?, sets = ?, notes = ?
+      SET date = ?, exercise_id = ?, weight = ?, is_bodyweight = ?, reps = ?, sets = ?, notes = ?
       WHERE id = ?
     `,
     [
       item.date,
       item.exerciseId,
       item.weight,
+      item.isBodyweight ? 1 : 0,
       item.reps,
       item.sets,
       item.notes,

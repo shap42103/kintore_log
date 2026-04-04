@@ -10,6 +10,7 @@ type Values = {
   date: string;
   exerciseId: number;
   weight: string;
+  isBodyweight?: boolean;
   reps: number;
   sets: number;
   notes: string;
@@ -22,13 +23,24 @@ type Props = {
   onSave: (vals: Values) => Promise<void> | void;
   saveLabel?: string;
   onClose?: () => void;
+  metricFlexes?: { weight?: number; reps?: number; sets?: number };
 };
 
-export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSave, saveLabel = '記録を保存する', onClose }: Props) {
+export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSave, saveLabel = '記録を保存する', onClose, metricFlexes }: Props) {
   const [date, setDate] = useState(initial.date ?? new Date().toISOString().slice(0, 10));
   // default to 0 = no selection so Record screen starts with empty exercise
   const [exerciseId, setExerciseId] = useState<number>(initial.exerciseId ?? 0);
   const [weight, setWeight] = useState(initial.weight ?? '');
+  const [isBodyweight, setIsBodyweight] = useState<boolean>(
+    (initial as any).isBodyweight ?? false,
+  );
+
+  // If initial or later isBodyweight is true, ensure weight input is cleared
+  useEffect(() => {
+    if (isBodyweight && weight) {
+      setWeight('');
+    }
+  }, [isBodyweight]);
   const [reps, setReps] = useState<number>(initial.reps ?? 0);
   const [sets, setSets] = useState<number>(initial.sets ?? 0);
   const [notes, setNotes] = useState(initial.notes ?? '');
@@ -95,14 +107,28 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
   const formatDateLabel = useMemo(() => date.replace(/-/g, '/'), [date]);
 
   const canAnalyze = useMemo(() => voiceText.trim().length > 0 && exercises.length > 0, [voiceText, exercises.length]);
-  const canSave = useMemo(() => date.trim().length > 0 && !!exerciseId && Number(weight) > 0 && Number(reps) > 0 && Number(sets) > 0, [date, exerciseId, weight, reps, sets]);
+  const canSave = useMemo(
+    () =>
+      date.trim().length > 0 &&
+      !!exerciseId &&
+      (isBodyweight || Number(weight) > 0) &&
+      Number(reps) > 0 &&
+      Number(sets) > 0,
+    [date, exerciseId, weight, reps, sets, isBodyweight],
+  );
 
   const applyParsed = (first: any) => {
     if (!first) return;
     setDate(first.date);
     const matched = exercises.find((e) => e.name === first.exercise);
     if (matched) setExerciseId(matched.id);
-    setWeight(String(first.weight ?? ''));
+    // If parsed indicates bodyweight, clear weight regardless of parsed weight
+    if (first.isBodyweight) {
+      setWeight('');
+    } else {
+      setWeight(String(first.weight ?? ''));
+    }
+    setIsBodyweight(!!first.isBodyweight);
     setReps(Number(first.reps ?? 0));
     setSets(Number(first.sets ?? 0));
     setNotes(first.notes ?? '');
@@ -201,17 +227,40 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
       </View>
 
       <View style={styles.metricsRow}>
-        <View style={styles.metricBox}>
+        <View style={[styles.metricBox, { flex: metricFlexes?.weight ?? 1.4, alignItems: 'flex-start', position: 'relative' }]}>
           <Text style={styles.label}>
-            重量 <Text style={styles.muted}>(kg)</Text>
+              重量 <Text style={styles.muted}>(kg)</Text>
           </Text>
-          <TextInput style={styles.metricInput} value={weight} onChangeText={setWeight} keyboardType="decimal-pad" placeholder="0.0" />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <TextInput
+              style={[styles.metricInput, { flex: 1 }, isBodyweight && { opacity: 0.6 }]}
+              value={weight}
+              onChangeText={setWeight}
+              keyboardType="decimal-pad"
+              placeholder="0.0"
+              editable={!isBodyweight}
+            />
+            <Pressable
+              onPress={() =>
+                setIsBodyweight((s) => {
+                  const next = !s;
+                  if (next) {
+                    setWeight('');
+                  }
+                  return next;
+                })
+              }
+              style={{ padding: 8, borderRadius: 8, backgroundColor: isBodyweight ? '#4d3ff0' : '#ededf2', marginRight: 24 }}
+            >
+              <Text style={{ color: isBodyweight ? '#fff' : '#333', fontWeight: '700' }}>自重</Text>
+            </Pressable>
+          </View>
         </View>
 
-        <View style={styles.metricBox}>
-          <Text style={styles.label}>回数</Text>
-          <View style={styles.metricPickerWrapper}>
-            <Picker selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
+        <View style={[styles.metricBox, { flex: metricFlexes?.reps ?? 0.8, alignItems: 'flex-end' }]}>
+          <Text style={[styles.label, { alignSelf: 'flex-start' }]}>回数</Text>
+          <View style={[styles.metricPickerWrapper, { width: '100%', alignItems: 'flex-end' }]}>
+            <Picker selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ width: 76, color: '#111', fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
                 {Array.from({ length: 21 }).map((_, i) => (
                   <Picker.Item key={i} label={String(i)} value={i} />
                 ))}
@@ -219,10 +268,10 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
           </View>
         </View>
 
-        <View style={styles.metricBox}>
-          <Text style={styles.label}>セット</Text>
-          <View style={styles.metricPickerWrapper}>
-            <Picker selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
+        <View style={[styles.metricBox, { flex: metricFlexes?.sets ?? 0.8, alignItems: 'flex-end' }]}>
+          <Text style={[styles.label, { alignSelf: 'flex-start' }]}>セット</Text>
+          <View style={[styles.metricPickerWrapper, { width: '100%', alignItems: 'flex-end' }]}>
+            <Picker selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ width: 76, color: '#111', fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
                 {Array.from({ length: 11 }).map((_, i) => (
                   <Picker.Item key={i} label={String(i)} value={i} />
                 ))}
@@ -245,8 +294,8 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
           return;
         }
         setIsSaving(true);
-        try {
-          await onSave({ date, exerciseId, weight, reps, sets, notes });
+          try {
+          await onSave({ date, exerciseId, weight, isBodyweight, reps, sets, notes });
         } catch (e) {
           const message = e instanceof Error ? e.message : '保存に失敗しました。';
           Alert.alert('保存エラー', message);

@@ -91,7 +91,7 @@ export function HistoryScreen() {
       id: item.id,
       date: item.date,
       exerciseId: item.exerciseId,
-      weight: String(item.weight),
+      weight: String(item.weight ?? ''),
       reps: String(item.reps),
       sets: String(item.sets),
       notes: item.notes,
@@ -125,7 +125,7 @@ export function HistoryScreen() {
               ...prev,
               date: first.date,
               exerciseId: exercise.id,
-              weight: String(first.weight),
+              weight: String(first.weight ?? ''),
               reps: String(first.reps),
               sets: String(first.sets),
               notes: first.notes,
@@ -332,7 +332,7 @@ export function HistoryScreen() {
 
             <Text style={styles.cardText}>{item.date}</Text>
             <Text style={styles.cardText}>
-              {item.weight}kg / {item.reps}回 / {item.sets}セット
+                {item.isBodyweight ? '自重' : `${item.weight}kg`} / {item.reps}回 / {item.sets}セット
             </Text>
             <Text style={styles.cardText}>備考: {item.notes || 'なし'}</Text>
           </View>
@@ -348,7 +348,8 @@ export function HistoryScreen() {
                 initial={{
                   date: editing.date,
                   exerciseId: editing.exerciseId,
-                  weight: editing.weight,
+                  weight: String(editing.weight ?? ''),
+                  isBodyweight: !!editing.isBodyweight,
                   reps: Number(editing.reps),
                   sets: Number(editing.sets),
                   notes: editing.notes,
@@ -372,7 +373,8 @@ export function HistoryScreen() {
                     applyParsed({
                       date: first.date,
                       exerciseId: exercise.id,
-                      weight: String(first.weight),
+                      weight: String(first.weight ?? ''),
+                      isBodyweight: !!first.isBodyweight,
                       reps: Number(first.reps),
                       sets: Number(first.sets),
                       notes: first.notes,
@@ -384,17 +386,18 @@ export function HistoryScreen() {
                 }}
                 onSave={async (vals) => {
                   if (!editing) return;
-                  const weightNum = Number(vals.weight);
+                  const weightNum = vals.isBodyweight ? null : Number(vals.weight);
                   const repsNum = Number(vals.reps);
                   const setsNum = Number(vals.sets);
-                  if (!vals.date || !vals.exerciseId || !weightNum || !repsNum || !setsNum) {
-                    Alert.alert('入力エラー', '日付・種目・重量・回数・セット数は必須です。');
+                  if (!vals.date || !vals.exerciseId || (!vals.isBodyweight && !weightNum) || !repsNum || !setsNum) {
+                    Alert.alert('入力エラー', '日付・種目・重量(※自重選択可)・回数・セット数は必須です。');
                     return;
                   }
                   await updateHistory(editing.id, {
                     date: vals.date,
                     exerciseId: vals.exerciseId,
                     weight: weightNum,
+                    isBodyweight: !!vals.isBodyweight,
                     reps: repsNum,
                     sets: setsNum,
                     notes: vals.notes,
