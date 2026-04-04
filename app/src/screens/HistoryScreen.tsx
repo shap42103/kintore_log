@@ -9,11 +9,11 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     View
 } from 'react-native';
 import { Calendar, type DateData } from 'react-native-calendars';
 
+import TrainingForm from '../components/TrainingForm';
 import {
     deleteHistory,
     getExercises,
@@ -341,58 +341,70 @@ export function HistoryScreen() {
 
       <Modal visible={!!editing} animationType="slide" onRequestClose={() => setEditing(null)}>
         <ScrollView contentContainerStyle={styles.modalContainer}>
-          <Text style={styles.title}>履歴編集</Text>
+          <Text style={[styles.title, styles.modalTitle]}>履歴編集</Text>
           {editing ? (
-            <>
-              <TextInput style={styles.input} value={editing.date} onChangeText={(text) => setEditing({ ...editing, date: text })} />
-              <View style={styles.pickerWrapper}>
-                <Picker
-                  selectedValue={editing.exerciseId}
-                  onValueChange={(value) => setEditing({ ...editing, exerciseId: Number(value) })}
-                  style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}
-                  itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}
-                >
-                  {exercises.map((exercise) => (
-                    <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
-                  ))}
-                </Picker>
-              </View>
-              <TextInput style={styles.input} keyboardType="decimal-pad" value={editing.weight} onChangeText={(text) => setEditing({ ...editing, weight: text })} placeholder="重量" />
-              <TextInput style={styles.input} keyboardType="number-pad" value={editing.reps} onChangeText={(text) => setEditing({ ...editing, reps: text })} placeholder="回数" />
-              <TextInput style={styles.input} keyboardType="number-pad" value={editing.sets} onChangeText={(text) => setEditing({ ...editing, sets: text })} placeholder="セット数" />
-              <TextInput style={styles.input} value={editing.notes} onChangeText={(text) => setEditing({ ...editing, notes: text })} placeholder="備考" />
+              <TrainingForm
+                exercises={exercises}
+                initial={{
+                  date: editing.date,
+                  exerciseId: editing.exerciseId,
+                  weight: editing.weight,
+                  reps: Number(editing.reps),
+                  sets: Number(editing.sets),
+                  notes: editing.notes,
+                }}
+                onAnalyze={async (voice, applyParsed) => {
+                  if (!voice) return;
+                  try {
+                    const result = await parseTrainingWithGemini(voice, exercises);
+                    const first = result[0];
+                    if (!first) {
+                      Alert.alert('解析結果なし', '編集に使えるデータが抽出できませんでした。');
+                      return;
+                    }
 
-              <View style={styles.block}>
-                <Text style={styles.label}>音声で編集</Text>
-                <TextInput
-                  style={[styles.input, styles.voiceInput]}
-                  multiline
-                  value={voiceText || speech.transcript}
-                  onChangeText={setVoiceText}
-                  placeholder="例: 今日のベンチを65kg 8回 3セットに変更"
-                />
-                <View style={styles.row}>
-                  <Pressable
-                    style={[styles.button, speech.isListening ? styles.buttonDanger : styles.buttonPrimary]}
-                    onPress={speech.isListening ? speech.stop : speech.start}
-                  >
-                    <Text style={styles.buttonText}>{speech.isListening ? '停止' : '音声開始'}</Text>
-                  </Pressable>
-                  <Pressable style={[styles.button, styles.buttonGhost]} onPress={applyVoiceEdit}>
-                    <Text style={styles.buttonGhostText}>解析して反映</Text>
-                  </Pressable>
-                </View>
-              </View>
+                    const exercise = exercises.find((entry) => entry.name === first.exercise);
+                    if (!exercise) {
+                      Alert.alert('種目エラー', `種目「${first.exercise}」が設定に存在しません。`);
+                      return;
+                    }
 
-              <View style={styles.row}>
-                <Pressable style={[styles.button, styles.buttonGhost]} onPress={() => setEditing(null)}>
-                  <Text style={styles.buttonGhostText}>閉じる</Text>
-                </Pressable>
-                <Pressable style={[styles.button, styles.buttonPrimary]} onPress={() => void saveEdit()}>
-                  <Text style={styles.buttonText}>保存</Text>
-                </Pressable>
-              </View>
-            </>
+                    applyParsed({
+                      date: first.date,
+                      exerciseId: exercise.id,
+                      weight: String(first.weight),
+                      reps: Number(first.reps),
+                      sets: Number(first.sets),
+                      notes: first.notes,
+                    });
+                  } catch (error) {
+                    const message = error instanceof Error ? error.message : '音声編集の解析に失敗しました。';
+                    Alert.alert('解析エラー', message);
+                  }
+                }}
+                onSave={async (vals) => {
+                  if (!editing) return;
+                  const weightNum = Number(vals.weight);
+                  const repsNum = Number(vals.reps);
+                  const setsNum = Number(vals.sets);
+                  if (!vals.date || !vals.exerciseId || !weightNum || !repsNum || !setsNum) {
+                    Alert.alert('入力エラー', '日付・種目・重量・回数・セット数は必須です。');
+                    return;
+                  }
+                  await updateHistory(editing.id, {
+                    date: vals.date,
+                    exerciseId: vals.exerciseId,
+                    weight: weightNum,
+                    reps: repsNum,
+                    sets: setsNum,
+                    notes: vals.notes,
+                  });
+                  setEditing(null);
+                  await reloadAll();
+                }}
+                onClose={() => setEditing(null)}
+                saveLabel="保存"
+              />
           ) : null}
         </ScrollView>
       </Modal>
@@ -588,6 +600,10 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 10,
     backgroundColor: '#f6f8fb',
+  },
+  modalTitle: {
+    marginTop: 36,
+    marginBottom: 8,
   },
   voiceInput: {
     minHeight: 90,
