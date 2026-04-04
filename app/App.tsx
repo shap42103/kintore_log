@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { initializeDatabase } from './src/db/database';
 import { HistoryScreen } from './src/screens/HistoryScreen';
@@ -67,8 +67,8 @@ export default function App() {
             backgroundColor: '#f4f4f5',
           },
           tabBarStyle: {
-            height: 76,
-            paddingBottom: 10,
+            height: Platform.OS === 'android' ? 110 : 76,
+            paddingBottom: Platform.OS === 'android' ? 40 : 10,
             paddingTop: 6,
             backgroundColor: '#fff',
             borderTopColor: '#e6e6ea',
