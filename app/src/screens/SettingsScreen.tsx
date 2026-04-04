@@ -38,6 +38,7 @@ export function SettingsScreen() {
       await addExercise(name);
       setNewName('');
       await reload();
+      Alert.alert('追加完了', '種目を追加しました。');
     } catch (error) {
       const message = error instanceof Error ? error.message : '追加に失敗しました。';
       Alert.alert('追加エラー', message);
