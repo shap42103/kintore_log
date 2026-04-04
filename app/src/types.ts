@@ -35,6 +35,7 @@ export type ParsedTrainingItem = {
   date: string;
   exercise: string;
   weight: number | null;
+  isBodyweight?: boolean;
   reps: number;
   sets: number;
   notes: string;

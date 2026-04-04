@@ -8,7 +8,18 @@ const parsedSchema = z.array(
   z.object({
     date: z.string().optional(),
     exercise: z.string().min(1),
-    weight: z.number().positive().nullable().optional(),
+    weight: z.preprocess((val) => {
+      if (val === null || val === undefined) return null;
+      if (typeof val === "number") return val;
+      if (typeof val === "string") {
+        const cleaned = val.replace(/[^0-9.+-]/g, "").trim();
+        if (cleaned === "") return null;
+        const num = Number(cleaned);
+        return Number.isFinite(num) ? num : null;
+      }
+      return null;
+    }, z.number().positive().nullable().optional()),
+    isBodyweight: z.boolean().optional(),
     reps: z.number().int().positive(),
     sets: z.number().int().positive(),
     notes: z.string().nullable().optional(),
@@ -82,7 +93,12 @@ export async function parseTrainingWithGemini(
   const names = exercises.map((exercise) => exercise.name).join(", ");
   const prompt = `あなたは筋トレ記録アシスタントです。\n
 ユーザー入力を解析し、必ずJSON配列のみを返してください。\n
-制約:\n- 返却形式は [{date, exercise, weight, reps, sets, notes}]\n- dateはYYYY-MM-DD。日付が明示されない場合は今日 (${toTodayDateString()}) を使う\n- exerciseは次の候補へ正規化: ${names}\n- 表記ゆれを解決する（例: ベンチ -> ベンチプレス）\n- 複数重量が含まれる場合はレコードを分割\n- notes以外は必須\n- 説明文は禁止、JSONのみ\n
+制約:\n- 返却形式は [{date: date, exercise: string, weight: number|null, reps:number, sets:number, notes:string|null}]\n
+- dateはYYYY-MM-DD。日付が明示されない場合は今日 (${toTodayDateString()}) を使う\n
+- exerciseは次の候補へ正規化: ${names}\n
+- 表記ゆれを解決する（例: ベンチ -> ベンチプレス）\n
+- 複数重量が含まれる場合はレコードを分割\n
+- 説明文は禁止、JSONのみ\n
 入力:\n${inputText}`;
 
   const response = await fetch(
@@ -118,6 +134,8 @@ export async function parseTrainingWithGemini(
 
   return parsed.map((item) => {
     const mappedExercise = mapExerciseName(item.exercise, exercises);
+    const mentionsBodyweight = /自重|body ?weight|bw/u.test(inputText);
+    const isBodyweight = !!item.isBodyweight || mentionsBodyweight;
 
     return {
       date:
@@ -125,7 +143,8 @@ export async function parseTrainingWithGemini(
           ? item.date
           : toTodayDateString(),
       exercise: mappedExercise,
-      weight: item.weight ?? null,
+      weight: isBodyweight ? null : (item.weight ?? null),
+      isBodyweight,
       reps: item.reps,
       sets: item.sets,
       notes: item.notes?.trim() ?? "",
