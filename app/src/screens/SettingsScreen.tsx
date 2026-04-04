@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -99,10 +100,17 @@ export function SettingsScreen() {
 
       <View style={styles.block}>
         <Text style={styles.label}>種目を追加</Text>
-        <TextInput style={styles.input} value={newName} onChangeText={setNewName} placeholder="種目名" />
-        <Pressable style={[styles.button, styles.buttonPrimary]} onPress={() => void onAdd()}>
-          <Text style={styles.buttonText}>追加</Text>
-        </Pressable>
+        <View style={styles.addRow}>
+          <TextInput
+            style={[styles.input, styles.listInput]}
+            value={newName}
+            onChangeText={setNewName}
+            placeholder="種目名"
+          />
+          <Pressable onPress={() => void onAdd()} style={styles.addButton} accessibilityLabel="追加">
+            <Ionicons name="add" size={18} color="#ffffff" />
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.block}>
@@ -111,41 +119,38 @@ export function SettingsScreen() {
           const isEditing = editingId === exercise.id;
 
           return (
-            <View key={exercise.id} style={styles.card}>
+            <View key={exercise.id} style={styles.listRow}>
               {isEditing ? (
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, styles.listInput]}
                   value={editingName}
                   onChangeText={setEditingName}
+                  placeholder="種目名"
                 />
               ) : (
-                <Text style={styles.cardTitle}>
-                  {exercise.name}
-                </Text>
+                <Text style={styles.listText} numberOfLines={1} ellipsizeMode="tail">{exercise.name}</Text>
               )}
 
-              <View style={styles.row}>
+              <View style={styles.iconRow}>
                 {isEditing ? (
-                  <Pressable style={[styles.button, styles.buttonPrimary]} onPress={() => void onSaveEdit()}>
-                    <Text style={styles.buttonText}>保存</Text>
+                  <Pressable onPress={() => void onSaveEdit()} style={styles.iconButton} accessibilityLabel="保存">
+                    <Ionicons name="checkmark" size={18} color="#175fe8" />
                   </Pressable>
                 ) : (
                   <Pressable
-                    style={[styles.button, styles.buttonGhost]}
                     onPress={() => {
                       setEditingId(exercise.id);
                       setEditingName(exercise.name);
                     }}
+                    style={styles.iconButton}
+                    accessibilityLabel="編集"
                   >
-                    <Text style={styles.buttonGhostText}>編集</Text>
+                    <Ionicons name="pencil" size={18} color="#243b53" />
                   </Pressable>
                 )}
 
-                <Pressable
-                  style={[styles.button, styles.buttonDanger]}
-                  onPress={() => onDelete(exercise)}
-                >
-                  <Text style={styles.buttonText}>削除</Text>
+                <Pressable onPress={() => onDelete(exercise)} style={styles.iconButton} accessibilityLabel="削除">
+                  <Ionicons name="trash" size={18} color="#cc2b52" />
                 </Pressable>
               </View>
             </View>
@@ -193,12 +198,64 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#d9e2ec',
     borderRadius: 8,
-    padding: 10,
-    gap: 8,
+    padding: 8,
+    gap: 6,
   },
   cardTitle: {
     fontWeight: '600',
     color: '#102542',
+  },
+  listRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#d9e2ec',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginBottom: 6,
+    backgroundColor: '#fff',
+  },
+  listText: {
+    flex: 1,
+    fontWeight: '600',
+    color: '#102542',
+    fontSize: 13,
+  },
+  listInput: {
+    flex: 1,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: '#e6eef8',
+    borderRadius: 6,
+  },
+  iconRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginLeft: 8,
+  },
+  iconButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#175fe8',
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  addRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   row: {
     flexDirection: 'row',
