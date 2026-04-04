@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
 
-import { PRESET_EXERCISES } from "../constants/presetExercises";
+import { INITIAL_EXERCISES } from "../constants/presetExercises";
 import type { Exercise, History, HistoryFilter, HistoryInput } from "../types";
 
 const dbPromise = SQLite.openDatabaseAsync("kintore_log.db");
@@ -14,8 +14,7 @@ export async function initializeDatabase() {
 
     CREATE TABLE IF NOT EXISTS exercises (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL UNIQUE,
-      is_preset INTEGER NOT NULL DEFAULT 0
+      name TEXT NOT NULL UNIQUE
     );
 
     CREATE TABLE IF NOT EXISTS histories (
@@ -33,9 +32,9 @@ export async function initializeDatabase() {
     CREATE INDEX IF NOT EXISTS idx_histories_exercise_id ON histories(exercise_id);
   `);
 
-  for (const name of PRESET_EXERCISES) {
+  for (const name of INITIAL_EXERCISES) {
     await db.runAsync(
-      "INSERT OR IGNORE INTO exercises (name, is_preset) VALUES (?, 1)",
+      "INSERT OR IGNORE INTO exercises (name) VALUES (?)",
       [name],
     );
   }
@@ -46,19 +45,17 @@ export async function getExercises() {
   const rows = await db.getAllAsync<{
     id: number;
     name: string;
-    is_preset: number;
-  }>("SELECT id, name, is_preset FROM exercises ORDER BY name ASC");
+  }>("SELECT id, name FROM exercises ORDER BY name ASC");
 
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
-    isPreset: row.is_preset === 1,
   })) satisfies Exercise[];
 }
 
 export async function addExercise(name: string) {
   const db = await dbPromise;
-  await db.runAsync("INSERT INTO exercises (name, is_preset) VALUES (?, 0)", [
+  await db.runAsync("INSERT INTO exercises (name) VALUES (?)", [
     name.trim(),
   ]);
 }

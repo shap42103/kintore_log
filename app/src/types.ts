@@ -1,7 +1,6 @@
 export type Exercise = {
   id: number;
   name: string;
-  isPreset: boolean;
 };
 
 export type History = {

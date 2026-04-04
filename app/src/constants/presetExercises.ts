@@ -1,4 +1,4 @@
-export const PRESET_EXERCISES = [
+export const INITIAL_EXERCISES = [
   "インクラインダンベルベンチプレス",
   "インクラインダンベルフライ",
   "バーベルフルスクワット",

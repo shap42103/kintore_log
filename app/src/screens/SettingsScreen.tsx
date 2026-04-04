@@ -122,7 +122,7 @@ export function SettingsScreen() {
                 />
               ) : (
                 <Text style={styles.cardTitle}>
-                  {exercise.name} {exercise.isPreset ? '（プリセット）' : ''}
+                  {exercise.name}
                 </Text>
               )}
 
