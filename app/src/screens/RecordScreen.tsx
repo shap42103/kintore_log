@@ -1,16 +1,16 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     ActivityIndicator,
-    Alert,
-    Pressable,
+    Alert, Platform, Pressable,
     ScrollView,
     StyleSheet,
     Text,
     TextInput,
-    View,
+    View
 } from 'react-native';
 
 import { addHistories, getExercises } from '../db/database';
@@ -24,9 +24,10 @@ export function RecordScreen() {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [exerciseId, setExerciseId] = useState<number | null>(null);
   const [weight, setWeight] = useState('');
-  const [reps, setReps] = useState('');
-  const [sets, setSets] = useState('');
+  const [reps, setReps] = useState<number>(0);
+  const [sets, setSets] = useState<number>(0);
   const [notes, setNotes] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -83,8 +84,8 @@ export function RecordScreen() {
       setDate(first.date);
       setExerciseId(matchedExercise.id);
       setWeight(String(first.weight));
-      setReps(String(first.reps));
-      setSets(String(first.sets));
+      setReps(Number(first.reps));
+      setSets(Number(first.sets));
       setNotes(first.notes ?? '');
     } catch (error) {
       const message = error instanceof Error ? error.message : '解析に失敗しました。';
@@ -107,15 +108,15 @@ export function RecordScreen() {
           date,
           exerciseId,
           weight: Number(weight),
-          reps: Number(reps),
-          sets: Number(sets),
+          reps,
+          sets,
           notes,
         },
       ]);
 
       setWeight('');
-      setReps('');
-      setSets('');
+      setReps(0);
+      setSets(0);
       setNotes('');
       setVoiceText('');
       speech.clear();
@@ -170,14 +171,25 @@ export function RecordScreen() {
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>年月日</Text>
         <View style={styles.dateRow}>
-          <TextInput
-            style={styles.input}
-            value={date}
-            onChangeText={setDate}
-            placeholder="YYYY-MM-DD"
-            autoCapitalize="none"
-          />
+          <Pressable style={styles.input} onPress={() => setShowDatePicker(true)}>
+            <Text style={{ fontSize: 26, fontWeight: '600', color: '#111' }}>{formatDateLabel}</Text>
+          </Pressable>
           <Text style={styles.datePreview}>{formatDateLabel}</Text>
+          {showDatePicker && (
+            <DateTimePicker
+              value={new Date(date)}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'inline' : 'default'}
+              onChange={(event, selected) => {
+                const current = selected || new Date(date);
+                const y = current.getFullYear();
+                const m = String(current.getMonth() + 1).padStart(2, '0');
+                const d = String(current.getDate()).padStart(2, '0');
+                setDate(`${y}-${m}-${d}`);
+                if (Platform.OS !== 'ios') setShowDatePicker(false);
+              }}
+            />
+          )}
         </View>
       </View>
 
@@ -185,8 +197,10 @@ export function RecordScreen() {
         <Text style={styles.label}>種目</Text>
         <View style={styles.pickerWrapper}>
           <Picker
-            selectedValue={exerciseId ?? 0}
+            selectedValue={exerciseId ?? (exercises[0]?.id ?? 0)}
             onValueChange={(value) => setExerciseId(Number(value))}
+            style={{ color: '#111' }}
+            itemStyle={{ color: '#111' }}
           >
             {exercises.map((exercise) => (
               <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
@@ -211,24 +225,24 @@ export function RecordScreen() {
 
         <View style={styles.metricBox}>
           <Text style={styles.label}>回数</Text>
-          <TextInput
-            style={styles.metricInput}
-            value={reps}
-            onChangeText={setReps}
-            keyboardType="number-pad"
-            placeholder="0"
-          />
+          <View style={styles.metricPickerWrapper}>
+            <Picker selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ color: '#111' }} itemStyle={{ color: '#111' }}>
+              {Array.from({ length: 51 }).map((_, i) => (
+                <Picker.Item key={i} label={String(i)} value={i} />
+              ))}
+            </Picker>
+          </View>
         </View>
 
         <View style={styles.metricBox}>
           <Text style={styles.label}>セット</Text>
-          <TextInput
-            style={styles.metricInput}
-            value={sets}
-            onChangeText={setSets}
-            keyboardType="number-pad"
-            placeholder="0"
-          />
+          <View style={styles.metricPickerWrapper}>
+            <Picker selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ color: '#111' }} itemStyle={{ color: '#111' }}>
+              {Array.from({ length: 21 }).map((_, i) => (
+                <Picker.Item key={i} label={String(i)} value={i} />
+              ))}
+            </Picker>
+          </View>
         </View>
       </View>
 
@@ -402,6 +416,15 @@ const styles = StyleSheet.create({
     color: '#1b1c26',
     fontWeight: '600',
     textAlign: 'center',
+  },
+  metricPickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#d4d5dc',
+    borderRadius: 14,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    minHeight: 54,
+    justifyContent: 'center',
   },
   notesArea: {
     minHeight: 120,
