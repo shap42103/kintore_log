@@ -2,7 +2,7 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Alert, Platform, Pressable,
@@ -32,11 +32,7 @@ export function RecordScreen() {
 
   const speech = useSpeechToText();
 
-  useEffect(() => {
-    if (speech.transcript) {
-      setVoiceText(speech.transcript);
-    }
-  }, [speech.transcript]);
+  
 
   const reloadExercises = useCallback(async () => {
     const list = await getExercises();
@@ -129,6 +125,65 @@ export function RecordScreen() {
   }, [canSave, date, exerciseId, weight, reps, sets, notes, speech]);
 
   const formatDateLabel = useMemo(() => date.replace(/-/g, '/'), [date]);
+
+  const [committedVoice, setCommittedVoice] = useState('');
+  const lastAppendedRef = useRef('');
+  const pauseTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pauseTimerRef.current) {
+        clearTimeout(pauseTimerRef.current as unknown as number);
+      }
+    };
+  }, []);
+
+
+  useEffect(() => {
+    // If listening, show live interim combined with committed text and debounce commits on pause
+    if (speech.isListening) {
+      const combined = committedVoice ? `${committedVoice} ${speech.transcript}` : speech.transcript;
+      setVoiceText(combined.trim());
+
+      // reset debounce timer whenever interim updates
+      if (pauseTimerRef.current) {
+        clearTimeout(pauseTimerRef.current as unknown as number);
+      }
+      if (speech.transcript) {
+        pauseTimerRef.current = setTimeout(() => {
+          // commit paused transcript
+          if (lastAppendedRef.current !== speech.transcript) {
+            setCommittedVoice((prev) => {
+              const next = prev ? `${prev} ${speech.transcript}` : speech.transcript;
+              setVoiceText(next.trim());
+              lastAppendedRef.current = speech.transcript;
+              return next;
+            });
+          }
+          speech.clear();
+        }, 1500) as unknown as number;
+      }
+
+      return;
+    }
+
+    // when listening stops, immediately commit any remaining transcript
+    if (!speech.isListening && speech.transcript) {
+      if (pauseTimerRef.current) {
+        clearTimeout(pauseTimerRef.current as unknown as number);
+        pauseTimerRef.current = null;
+      }
+      if (lastAppendedRef.current !== speech.transcript) {
+        setCommittedVoice((prev) => {
+          const next = prev ? `${prev} ${speech.transcript}` : speech.transcript;
+          setVoiceText(next.trim());
+          lastAppendedRef.current = speech.transcript;
+          return next;
+        });
+      }
+      speech.clear();
+    }
+  }, [speech.isListening, speech.transcript, committedVoice, speech]);
 
   return (
     <View style={styles.container}>
