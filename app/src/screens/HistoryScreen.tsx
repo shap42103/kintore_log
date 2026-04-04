@@ -1,15 +1,15 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
 import {
     Alert,
-    Modal,
-    Pressable,
+    Modal, Platform, Pressable,
     ScrollView,
     StyleSheet,
     Text,
     TextInput,
-    View,
+    View
 } from 'react-native';
 import { Calendar, type DateData } from 'react-native-calendars';
 
@@ -41,6 +41,9 @@ export function HistoryScreen() {
   const [exerciseFilter, setExerciseFilter] = useState<number | undefined>(undefined);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const [showFromPicker, setShowFromPicker] = useState(false);
+  const [showToPicker, setShowToPicker] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [editing, setEditing] = useState<EditForm | null>(null);
   const [voiceText, setVoiceText] = useState('');
 
@@ -180,6 +183,13 @@ export function HistoryScreen() {
     setToDate(day.dateString);
   }, []);
 
+  const isPeriodInvalid = useMemo(() => {
+    if (!fromDate || !toDate) return false;
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    return to < from;
+  }, [fromDate, toDate]);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>トレーニング履歴</Text>
@@ -191,25 +201,114 @@ export function HistoryScreen() {
 
       <View style={styles.block}>
         <Text style={styles.label}>フィルター</Text>
-        <TextInput style={styles.input} placeholder="開始日(YYYY-MM-DD)" value={fromDate} onChangeText={setFromDate} />
-        <TextInput style={styles.input} placeholder="終了日(YYYY-MM-DD)" value={toDate} onChangeText={setToDate} />
-
-        <View style={styles.pickerWrapper}>
-          <Picker
-            selectedValue={exerciseFilter ?? 0}
-            onValueChange={(value) => setExerciseFilter(value === 0 ? undefined : Number(value))}
-          >
-            <Picker.Item label="全種目" value={0} />
-            {exercises.map((exercise) => (
-              <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
-            ))}
-          </Picker>
+        <View style={styles.filterSummaryRow}>
+          <Text style={styles.filterSummaryText}>{fromDate || '開始日未選択'} ～ {toDate || '終了日未選択'}</Text>
+          <Text style={styles.filterSummaryText}>{exerciseFilter ? (exercises.find(e => e.id === exerciseFilter)?.name ?? '種目選択') : '全種目'}</Text>
         </View>
-
-        <Pressable style={[styles.button, styles.buttonPrimary]} onPress={() => void reloadAll()}>
-          <Text style={styles.buttonText}>適用</Text>
+        <Pressable style={[styles.button, styles.buttonPrimary]} onPress={() => setIsFilterOpen(true)}>
+          <Text style={styles.buttonText}>フィルタを編集</Text>
         </Pressable>
       </View>
+
+      {isFilterOpen && (
+        <Modal visible={isFilterOpen} animationType="slide" transparent onRequestClose={() => setIsFilterOpen(false)}>
+          <View style={styles.filterOverlay}>
+            <View style={styles.filterSheet}>
+              <View style={styles.filterHeader}>
+                <Text style={styles.filterTitle}>フィルタ</Text>
+                <Pressable onPress={() => setIsFilterOpen(false)} style={styles.filterCloseButton}><Text style={styles.filterCloseText}>閉じる</Text></Pressable>
+              </View>
+
+              <View style={styles.filterBody}>
+                <Text style={styles.label}>種目で絞り込み</Text>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={exerciseFilter ?? 0}
+                    onValueChange={(value) => setExerciseFilter(value === 0 ? undefined : Number(value))}
+                    style={{ color: '#111' }}
+                    itemStyle={{ color: '#111' }}
+                  >
+                    <Picker.Item label="すべての種目" value={0} />
+                    {exercises.map((exercise) => (
+                      <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
+                    ))}
+                  </Picker>
+                </View>
+
+                <Text style={[styles.label, { marginTop: 12 }]}>期間で絞り込み</Text>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  <Pressable style={styles.input} onPress={() => setShowFromPicker(true)}>
+                    <Text style={{ color: '#111' }}>{fromDate || '開始日'}</Text>
+                  </Pressable>
+                  <Pressable style={styles.input} onPress={() => setShowToPicker(true)}>
+                    <Text style={{ color: '#111' }}>{toDate || '終了日'}</Text>
+                  </Pressable>
+                </View>
+                {isPeriodInvalid ? <Text style={styles.periodError}>終了日は開始日以降に設定してください。</Text> : null}
+                {showFromPicker && (
+                  <DateTimePicker
+                    value={fromDate ? new Date(fromDate) : new Date()}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                    onChange={(event, selected) => {
+                      // On Android, event.type === 'dismissed' when cancelled
+                      if (Platform.OS === 'android' && event?.type === 'dismissed') {
+                        setShowFromPicker(false);
+                        return;
+                      }
+                      if (selected) {
+                        const current = selected;
+                        const y = current.getFullYear();
+                        const m = String(current.getMonth() + 1).padStart(2, '0');
+                        const d = String(current.getDate()).padStart(2, '0');
+                        setFromDate(`${y}-${m}-${d}`);
+                      }
+                      if (Platform.OS !== 'ios') setShowFromPicker(false);
+                    }}
+                  />
+                )}
+                {showToPicker && (
+                  <DateTimePicker
+                    value={toDate ? new Date(toDate) : new Date()}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                    onChange={(event, selected) => {
+                      if (Platform.OS === 'android' && event?.type === 'dismissed') {
+                        setShowToPicker(false);
+                        return;
+                      }
+                      if (selected) {
+                        const current = selected;
+                        const y = current.getFullYear();
+                        const m = String(current.getMonth() + 1).padStart(2, '0');
+                        const d = String(current.getDate()).padStart(2, '0');
+                        setToDate(`${y}-${m}-${d}`);
+                      }
+                      if (Platform.OS !== 'ios') setShowToPicker(false);
+                    }}
+                  />
+                )}
+              </View>
+
+              <View style={styles.filterFooter}>
+                <Pressable style={[styles.button, styles.buttonGhost]} onPress={() => { setExerciseFilter(undefined); setFromDate(''); setToDate(''); void reloadAll(); setIsFilterOpen(false); }}>
+                  <Text style={styles.buttonGhostText}>クリア</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.button, styles.buttonPrimary, isPeriodInvalid && styles.buttonDisabled]}
+                  disabled={isPeriodInvalid}
+                  onPress={() => {
+                    void reloadAll();
+                    setIsFilterOpen(false);
+                  }}
+                >
+                  <Text style={styles.buttonText}>適用</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
 
       <View style={styles.block}>
         <Text style={styles.label}>履歴一覧 ({histories.length}件)</Text>
@@ -320,6 +419,51 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     backgroundColor: '#fff',
+    color: '#111',
+  },
+  filterSummaryRow: {
+    flexDirection: 'column',
+    gap: 6,
+    marginBottom: 8,
+  },
+  filterSummaryText: {
+    color: '#334e68',
+  },
+  filterOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'flex-end',
+  },
+  filterSheet: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 16,
+  },
+  filterHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  filterTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  filterCloseButton: {
+    padding: 8,
+  },
+  filterCloseText: {
+    color: '#74757d',
+    fontWeight: '600',
+  },
+  filterBody: {
+    gap: 12,
+  },
+  filterFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
   },
   pickerWrapper: {
     borderWidth: 1,
@@ -369,6 +513,14 @@ const styles = StyleSheet.create({
   },
   buttonGhostText: {
     color: '#243b53',
+    fontWeight: '600',
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  periodError: {
+    color: '#d64545',
+    marginTop: 6,
     fontWeight: '600',
   },
   modalContainer: {

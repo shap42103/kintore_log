@@ -138,7 +138,7 @@ export function RecordScreen() {
       <View style={styles.voiceBlock}>
         <View style={styles.voiceHeader}>
           <Feather name="mic" size={16} color="#3f3aa8" />
-          <Text style={styles.voiceTitle}>AI音声入力（テスト用モック）</Text>
+          <Text style={styles.voiceTitle}>トレーニング内容</Text>
         </View>
 
         <View style={styles.voiceInputWrap}>
@@ -181,6 +181,14 @@ export function RecordScreen() {
               mode="date"
               display={Platform.OS === 'ios' ? 'inline' : 'default'}
               onChange={(event, selected) => {
+                // Android: event.type === 'dismissed' when cancelled and selected is undefined.
+                if (Platform.OS !== 'ios') {
+                  if (event?.type === 'dismissed' || !selected) {
+                    setShowDatePicker(false);
+                    return;
+                  }
+                }
+
                 const current = selected || new Date(date);
                 const y = current.getFullYear();
                 const m = String(current.getMonth() + 1).padStart(2, '0');
