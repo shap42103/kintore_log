@@ -26,7 +26,8 @@ type Props = {
 
 export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSave, saveLabel = '記録を保存する', onClose }: Props) {
   const [date, setDate] = useState(initial.date ?? new Date().toISOString().slice(0, 10));
-  const [exerciseId, setExerciseId] = useState<number>(initial.exerciseId ?? (exercises[0]?.id ?? 0));
+  // default to 0 = no selection so Record screen starts with empty exercise
+  const [exerciseId, setExerciseId] = useState<number>(initial.exerciseId ?? 0);
   const [weight, setWeight] = useState(initial.weight ?? '');
   const [reps, setReps] = useState<number>(initial.reps ?? 0);
   const [sets, setSets] = useState<number>(initial.sets ?? 0);
@@ -191,6 +192,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
         <Text style={styles.label}>種目</Text>
         <View style={styles.pickerWrapper}>
           <Picker selectedValue={exerciseId} onValueChange={(value) => setExerciseId(Number(value))} style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
+            <Picker.Item label="種目を選択" value={0} />
             {exercises.map((exercise) => (
               <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
             ))}
@@ -210,9 +212,9 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
           <Text style={styles.label}>回数</Text>
           <View style={styles.metricPickerWrapper}>
             <Picker selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
-              {Array.from({ length: 51 }).map((_, i) => (
-                <Picker.Item key={i} label={String(i)} value={i} />
-              ))}
+                {Array.from({ length: 21 }).map((_, i) => (
+                  <Picker.Item key={i} label={String(i)} value={i} />
+                ))}
             </Picker>
           </View>
         </View>
@@ -221,9 +223,9 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
           <Text style={styles.label}>セット</Text>
           <View style={styles.metricPickerWrapper}>
             <Picker selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
-              {Array.from({ length: 21 }).map((_, i) => (
-                <Picker.Item key={i} label={String(i)} value={i} />
-              ))}
+                {Array.from({ length: 11 }).map((_, i) => (
+                  <Picker.Item key={i} label={String(i)} value={i} />
+                ))}
             </Picker>
           </View>
         </View>
