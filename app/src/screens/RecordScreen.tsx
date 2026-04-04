@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     ActivityIndicator,
     Alert, Platform, Pressable,
-    ScrollView,
     StyleSheet,
     Text,
     TextInput,
@@ -132,7 +131,7 @@ export function RecordScreen() {
   const formatDateLabel = useMemo(() => date.replace(/-/g, '/'), [date]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <View style={styles.voiceBlock}>
         <View style={styles.voiceHeader}>
           <Feather name="file-text" size={16} color="#3f3aa8" />
@@ -141,11 +140,12 @@ export function RecordScreen() {
 
         <View style={styles.voiceInputWrap}>
           <TextInput
-            multiline
+            multiline={true}
+            numberOfLines={2}
             style={styles.voiceTextArea}
             value={voiceText}
             onChangeText={setVoiceText}
-            placeholder="例：今日、ベンチプレス60kgを10回3セット、調子よかった"
+            placeholder="例：ベンチ60kg 10x3、調子良し"
           />
           <Pressable
             style={[styles.micFab, speech.isListening ? styles.micFabDanger : styles.micFabPrimary]}
@@ -167,12 +167,11 @@ export function RecordScreen() {
       </View>
 
       <View style={styles.fieldGroup}>
-        <Text style={styles.label}>年月日</Text>
+        <Text style={styles.label}>日時</Text>
         <View style={styles.dateRow}>
           <Pressable style={styles.input} onPress={() => setShowDatePicker(true)}>
-            <Text style={{ fontSize: 26, fontWeight: '600', color: '#111' }}>{formatDateLabel}</Text>
+            <Text style={{ fontSize: 20, fontWeight: '400', color: '#111' }}>{formatDateLabel}</Text>
           </Pressable>
-          <Text style={styles.datePreview}>{formatDateLabel}</Text>
           {showDatePicker && (
             <DateTimePicker
               value={new Date(date)}
@@ -205,8 +204,8 @@ export function RecordScreen() {
           <Picker
             selectedValue={exerciseId ?? (exercises[0]?.id ?? 0)}
             onValueChange={(value) => setExerciseId(Number(value))}
-            style={{ color: '#111' }}
-            itemStyle={{ color: '#111' }}
+            style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}
+            itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}
           >
             {exercises.map((exercise) => (
               <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
@@ -232,7 +231,7 @@ export function RecordScreen() {
         <View style={styles.metricBox}>
           <Text style={styles.label}>回数</Text>
           <View style={styles.metricPickerWrapper}>
-            <Picker selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ color: '#111' }} itemStyle={{ color: '#111' }}>
+            <Picker selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
               {Array.from({ length: 51 }).map((_, i) => (
                 <Picker.Item key={i} label={String(i)} value={i} />
               ))}
@@ -243,7 +242,7 @@ export function RecordScreen() {
         <View style={styles.metricBox}>
           <Text style={styles.label}>セット</Text>
           <View style={styles.metricPickerWrapper}>
-            <Picker selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ color: '#111' }} itemStyle={{ color: '#111' }}>
+            <Picker selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
               {Array.from({ length: 21 }).map((_, i) => (
                 <Picker.Item key={i} label={String(i)} value={i} />
               ))}
@@ -273,16 +272,16 @@ export function RecordScreen() {
       >
         {isSaving ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveButtonText}>記録を保存する</Text>}
       </Pressable>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingTop: 8,
-    paddingBottom: 96,
-    gap: 18,
+    padding: 12,
+    paddingTop: 6,
+    paddingBottom: 80,
+    gap: 12,
     backgroundColor: '#f4f4f5',
   },
   title: {
@@ -293,11 +292,11 @@ const styles = StyleSheet.create({
   },
   voiceBlock: {
     backgroundColor: '#dfe3f4',
-    borderRadius: 16,
-    padding: 12,
+    borderRadius: 12,
+    padding: 8,
     borderWidth: 1,
     borderColor: '#d3d9f1',
-    gap: 10,
+    gap: 8,
   },
   voiceHeader: {
     flexDirection: 'row',
@@ -313,17 +312,17 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   voiceTextArea: {
-    minHeight: 108,
+    minHeight: 64,
     borderColor: '#d4d5dc',
     borderWidth: 1,
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    paddingRight: 54,
-    textAlignVertical: 'top',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    paddingRight: 48,
     backgroundColor: '#fff',
-    fontSize: 18,
+    fontSize: 14,
     color: '#1f2430',
+    textAlignVertical: 'top',
   },
   micFab: {
     position: 'absolute',
@@ -342,8 +341,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#d64545',
   },
   parseButton: {
-    borderRadius: 12,
-    minHeight: 40,
+    borderRadius: 10,
+    minHeight: 36,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#4d3ff0',
@@ -354,7 +353,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   fieldGroup: {
-    gap: 8,
+    gap: 6,
   },
   notesHeader: {
     flexDirection: 'row',
@@ -364,7 +363,7 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: '700',
     color: '#30303a',
-    fontSize: 18,
+    fontSize: 16,
   },
   muted: {
     color: '#74757d',
@@ -379,31 +378,29 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#d4d5dc',
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     backgroundColor: '#fff',
     color: '#10111a',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
+    minHeight: 56,
+    justifyContent: 'center',
   },
   dateRow: {
     position: 'relative',
   },
-  datePreview: {
-    position: 'absolute',
-    right: 14,
-    top: 16,
-    fontSize: 14,
-    color: '#11121b',
-    fontWeight: '700',
-  },
+  
   pickerWrapper: {
     borderWidth: 1,
     borderColor: '#d4d5dc',
     borderRadius: 14,
     overflow: 'hidden',
     backgroundColor: '#fff',
+    minHeight: 56,
+    justifyContent: 'center',
+    paddingVertical: 4,
   },
   metricsRow: {
     flexDirection: 'row',
@@ -416,38 +413,43 @@ const styles = StyleSheet.create({
   metricInput: {
     borderWidth: 1,
     borderColor: '#d4d5dc',
-    borderRadius: 14,
+    borderRadius: 12,
     backgroundColor: '#fff',
-    minHeight: 54,
-    fontSize: 16,
+    minHeight: 64,
+    paddingVertical: 8,
+    fontSize: 18,
+    lineHeight: 22,
     color: '#1b1c26',
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: '400',
+    textAlign: 'left',
+    paddingHorizontal: 12,
+    textAlignVertical: 'center',
   },
   metricPickerWrapper: {
     borderWidth: 1,
     borderColor: '#d4d5dc',
-    borderRadius: 14,
+    borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#fff',
-    minHeight: 54,
+    minHeight: 56,
     justifyContent: 'center',
+    paddingVertical: 4,
   },
   notesArea: {
-    minHeight: 120,
+    minHeight: 80,
     borderWidth: 1,
     borderColor: '#d4d5dc',
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     textAlignVertical: 'top',
     backgroundColor: '#fff',
     color: '#1b1c26',
     fontSize: 14,
   },
   saveButton: {
-    borderRadius: 14,
-    minHeight: 56,
+    borderRadius: 12,
+    minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#151721',

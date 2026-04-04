@@ -349,6 +349,8 @@ export function HistoryScreen() {
                 <Picker
                   selectedValue={editing.exerciseId}
                   onValueChange={(value) => setEditing({ ...editing, exerciseId: Number(value) })}
+                  style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}
+                  itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}
                 >
                   {exercises.map((exercise) => (
                     <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
