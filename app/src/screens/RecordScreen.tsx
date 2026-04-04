@@ -133,8 +133,6 @@ export function RecordScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>トレーニング記録</Text>
-
       <View style={styles.voiceBlock}>
         <View style={styles.voiceHeader}>
           <Feather name="mic" size={16} color="#3f3aa8" />
@@ -282,6 +280,7 @@ export function RecordScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingTop: 8,
     paddingBottom: 96,
     gap: 18,
     backgroundColor: '#f4f4f5',

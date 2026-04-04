@@ -192,8 +192,6 @@ export function HistoryScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>トレーニング履歴</Text>
-
       <View style={styles.block}>
         <Text style={styles.label}>カレンダー</Text>
         <Calendar markedDates={markedDates} onDayPress={onDayPress} />
@@ -394,6 +392,7 @@ export function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingTop: 8,
     gap: 16,
     backgroundColor: '#f6f8fb',
   },

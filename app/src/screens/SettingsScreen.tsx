@@ -96,8 +96,6 @@ export function SettingsScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>設定</Text>
-      <Text style={styles.description}>トレーニング種目の追加・編集・削除ができます。</Text>
 
       <View style={styles.block}>
         <Text style={styles.label}>種目を追加</Text>
@@ -161,6 +159,7 @@ export function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingTop: 8,
     gap: 16,
     backgroundColor: '#f6f8fb',
   },
