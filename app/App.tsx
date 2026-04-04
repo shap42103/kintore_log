@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
@@ -52,15 +53,67 @@ export default function App() {
       <StatusBar style="dark" />
       <Tab.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: '#102542' },
-          headerTintColor: '#fff',
-          tabBarActiveTintColor: '#175fe8',
-          tabBarInactiveTintColor: '#7b8794',
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+          },
+          headerStyle: {
+            backgroundColor: '#f4f4f5',
+          },
+          headerTintColor: '#151721',
+          sceneStyle: {
+            backgroundColor: '#f4f4f5',
+          },
+          tabBarStyle: {
+            height: 76,
+            paddingBottom: 10,
+            paddingTop: 6,
+            backgroundColor: '#fff',
+            borderTopColor: '#e6e6ea',
+            borderTopWidth: 1,
+          },
+          tabBarActiveTintColor: '#4d3ff0',
+          tabBarInactiveTintColor: '#7e8088',
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: '700',
+          },
         }}
       >
-        <Tab.Screen name="記録" component={RecordScreen} />
-        <Tab.Screen name="履歴" component={HistoryScreen} />
-        <Tab.Screen name="設定" component={SettingsScreen} />
+        <Tab.Screen
+          name="記録"
+          component={RecordScreen}
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.tabIconWrap, focused && styles.tabIconWrapActive]}>
+                <Ionicons name="barbell-outline" size={22} color={color} />
+              </View>
+            ),
+            tabBarBadge: undefined,
+          }}
+        />
+        <Tab.Screen
+          name="履歴"
+          component={HistoryScreen}
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.tabIconWrap, focused && styles.tabIconWrapActive]}>
+                <Ionicons name="calendar-outline" size={22} color={color} />
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="設定"
+          component={SettingsScreen}
+          options={{
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.tabIconWrap, focused && styles.tabIconWrapActive]}>
+                <Ionicons name="settings-outline" size={22} color={color} />
+              </View>
+            ),
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
@@ -86,5 +139,15 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#334e68',
     textAlign: 'center',
+  },
+  tabIconWrap: {
+    borderRadius: 14,
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabIconWrapActive: {
+    backgroundColor: '#eeecff',
   },
 });

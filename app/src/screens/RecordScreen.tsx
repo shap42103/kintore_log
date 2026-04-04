@@ -1,3 +1,5 @@
+import { Feather, Ionicons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -14,12 +16,17 @@ import {
 import { addHistories, getExercises } from '../db/database';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import { parseTrainingWithGemini } from '../services/geminiService';
-import type { Exercise, ParsedTrainingItem } from '../types';
+import type { Exercise } from '../types';
 
 export function RecordScreen() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [rawText, setRawText] = useState('');
-  const [parsedItems, setParsedItems] = useState<ParsedTrainingItem[]>([]);
+  const [voiceText, setVoiceText] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [exerciseId, setExerciseId] = useState<number | null>(null);
+  const [weight, setWeight] = useState('');
+  const [reps, setReps] = useState('');
+  const [sets, setSets] = useState('');
+  const [notes, setNotes] = useState('');
   const [isParsing, setIsParsing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -27,7 +34,7 @@ export function RecordScreen() {
 
   useEffect(() => {
     if (speech.transcript) {
-      setRawText(speech.transcript);
+      setVoiceText(speech.transcript);
     }
   }, [speech.transcript]);
 
@@ -42,117 +49,209 @@ export function RecordScreen() {
     }, [reloadExercises]),
   );
 
-  const canAnalyze = useMemo(() => rawText.trim().length > 0 && exercises.length > 0, [rawText, exercises.length]);
+  useEffect(() => {
+    if (exerciseId === null && exercises.length > 0) {
+      setExerciseId(exercises[0].id);
+    }
+  }, [exerciseId, exercises]);
 
-  const onAnalyze = useCallback(async () => {
+  const canAnalyze = useMemo(() => voiceText.trim().length > 0 && exercises.length > 0, [voiceText, exercises.length]);
+  const canSave = useMemo(() => {
+    return date.trim().length > 0 && !!exerciseId && Number(weight) > 0 && Number(reps) > 0 && Number(sets) > 0;
+  }, [date, exerciseId, weight, reps, sets]);
+
+  const onAnalyzeVoice = useCallback(async () => {
     if (!canAnalyze) {
       return;
     }
 
     setIsParsing(true);
     try {
-      const result = await parseTrainingWithGemini(rawText, exercises);
-      setParsedItems(result);
-      if (result.length === 0) {
+      const result = await parseTrainingWithGemini(voiceText, exercises);
+      const first = result[0];
+      if (!first) {
         Alert.alert('解析結果なし', '入力から記録可能なデータを抽出できませんでした。');
+        return;
       }
+
+      const matchedExercise = exercises.find((entry) => entry.name === first.exercise);
+      if (!matchedExercise) {
+        Alert.alert('種目エラー', `種目「${first.exercise}」が未登録です。設定画面で追加してください。`);
+        return;
+      }
+
+      setDate(first.date);
+      setExerciseId(matchedExercise.id);
+      setWeight(String(first.weight));
+      setReps(String(first.reps));
+      setSets(String(first.sets));
+      setNotes(first.notes ?? '');
     } catch (error) {
       const message = error instanceof Error ? error.message : '解析に失敗しました。';
       Alert.alert('解析エラー', message);
     } finally {
       setIsParsing(false);
     }
-  }, [canAnalyze, exercises, rawText]);
+  }, [canAnalyze, exercises, voiceText]);
 
   const onSave = useCallback(async () => {
-    if (parsedItems.length === 0) {
-      Alert.alert('保存対象なし', '先に解析して記録データを作成してください。');
+    if (!canSave || !exerciseId) {
+      Alert.alert('入力エラー', '日付・種目・重量・回数・セットを入力してください。');
       return;
     }
 
     setIsSaving(true);
     try {
-      const items = parsedItems.map((item) => {
-        const exercise = exercises.find((entry) => entry.name === item.exercise);
-        if (!exercise) {
-          throw new Error(`種目「${item.exercise}」が未登録です。設定画面で追加してください。`);
-        }
+      await addHistories([
+        {
+          date,
+          exerciseId,
+          weight: Number(weight),
+          reps: Number(reps),
+          sets: Number(sets),
+          notes,
+        },
+      ]);
 
-        return {
-          date: item.date,
-          exerciseId: exercise.id,
-          weight: item.weight,
-          reps: item.reps,
-          sets: item.sets,
-          notes: item.notes,
-        };
-      });
-
-      await addHistories(items);
-      setParsedItems([]);
-      setRawText('');
+      setWeight('');
+      setReps('');
+      setSets('');
+      setNotes('');
+      setVoiceText('');
       speech.clear();
-      Alert.alert('保存完了', `${items.length}件のトレーニング記録を保存しました。`);
+      Alert.alert('保存完了', 'トレーニング記録を保存しました。');
     } catch (error) {
       const message = error instanceof Error ? error.message : '保存に失敗しました。';
       Alert.alert('保存エラー', message);
     } finally {
       setIsSaving(false);
     }
-  }, [exercises, parsedItems, speech]);
+  }, [canSave, date, exerciseId, weight, reps, sets, notes, speech]);
+
+  const formatDateLabel = useMemo(() => date.replace(/-/g, '/'), [date]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>トレーニング記録</Text>
-      <Text style={styles.description}>音声またはテキストで入力し、Geminiで構造化して保存します。</Text>
 
-      <View style={styles.block}>
-        <Text style={styles.label}>入力</Text>
-        <TextInput
-          multiline
-          style={styles.textArea}
-          value={rawText}
-          onChangeText={setRawText}
-          placeholder="例: 今日はベンチ60kg 10回3セット、40kg 12回1セット"
-        />
-        <View style={styles.row}>
-          <Pressable style={[styles.button, speech.isListening ? styles.buttonDanger : styles.buttonPrimary]} onPress={speech.isListening ? speech.stop : speech.start}>
-            <Text style={styles.buttonText}>{speech.isListening ? '音声停止' : '音声開始'}</Text>
-          </Pressable>
-          <Pressable style={[styles.button, styles.buttonGhost]} onPress={speech.clear}>
-            <Text style={styles.buttonGhostText}>クリア</Text>
+      <View style={styles.voiceBlock}>
+        <View style={styles.voiceHeader}>
+          <Feather name="mic" size={16} color="#3f3aa8" />
+          <Text style={styles.voiceTitle}>AI音声入力（テスト用モック）</Text>
+        </View>
+
+        <View style={styles.voiceInputWrap}>
+          <TextInput
+            multiline
+            style={styles.voiceTextArea}
+            value={voiceText}
+            onChangeText={setVoiceText}
+            placeholder="例：今日、ベンチプレス60kgを10回3セット、調子よかった"
+          />
+          <Pressable
+            style={[styles.micFab, speech.isListening ? styles.micFabDanger : styles.micFabPrimary]}
+            onPress={speech.isListening ? speech.stop : speech.start}
+          >
+            <Ionicons name="mic" size={18} color="#fff" />
           </Pressable>
         </View>
+
+        <Pressable
+          disabled={!canAnalyze || isParsing}
+          style={[styles.parseButton, (!canAnalyze || isParsing) && styles.buttonDisabled]}
+          onPress={onAnalyzeVoice}
+        >
+          {isParsing ? <ActivityIndicator color="#fff" /> : <Text style={styles.parseButtonText}>テキストを解析</Text>}
+        </Pressable>
+
         {speech.error ? <Text style={styles.errorText}>{speech.error}</Text> : null}
       </View>
 
-      <View style={styles.block}>
-        <Pressable disabled={!canAnalyze || isParsing} style={[styles.button, styles.buttonPrimary, (!canAnalyze || isParsing) && styles.buttonDisabled]} onPress={onAnalyze}>
-          {isParsing ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Geminiで解析</Text>}
-        </Pressable>
+      <View style={styles.fieldGroup}>
+        <Text style={styles.label}>年月日</Text>
+        <View style={styles.dateRow}>
+          <TextInput
+            style={styles.input}
+            value={date}
+            onChangeText={setDate}
+            placeholder="YYYY-MM-DD"
+            autoCapitalize="none"
+          />
+          <Text style={styles.datePreview}>{formatDateLabel}</Text>
+        </View>
       </View>
 
-      <View style={styles.block}>
-        <Text style={styles.label}>解析結果</Text>
-        {parsedItems.length === 0 ? <Text style={styles.emptyText}>まだ解析結果がありません。</Text> : null}
-        {parsedItems.map((item, index) => (
-          <View key={`${item.exercise}-${item.date}-${index}`} style={styles.resultCard}>
-            <Text style={styles.resultTitle}>{item.exercise}</Text>
-            <Text style={styles.resultText}>{item.date}</Text>
-            <Text style={styles.resultText}>
-              {item.weight}kg / {item.reps}回 / {item.sets}セット
-            </Text>
-            <Text style={styles.resultText}>備考: {item.notes || 'なし'}</Text>
-          </View>
-        ))}
+      <View style={styles.fieldGroup}>
+        <Text style={styles.label}>種目</Text>
+        <View style={styles.pickerWrapper}>
+          <Picker
+            selectedValue={exerciseId ?? 0}
+            onValueChange={(value) => setExerciseId(Number(value))}
+          >
+            {exercises.map((exercise) => (
+              <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
+            ))}
+          </Picker>
+        </View>
+      </View>
+
+      <View style={styles.metricsRow}>
+        <View style={styles.metricBox}>
+          <Text style={styles.label}>
+            重量 <Text style={styles.muted}>(kg)</Text>
+          </Text>
+          <TextInput
+            style={styles.metricInput}
+            value={weight}
+            onChangeText={setWeight}
+            keyboardType="decimal-pad"
+            placeholder="0.0"
+          />
+        </View>
+
+        <View style={styles.metricBox}>
+          <Text style={styles.label}>回数</Text>
+          <TextInput
+            style={styles.metricInput}
+            value={reps}
+            onChangeText={setReps}
+            keyboardType="number-pad"
+            placeholder="0"
+          />
+        </View>
+
+        <View style={styles.metricBox}>
+          <Text style={styles.label}>セット</Text>
+          <TextInput
+            style={styles.metricInput}
+            value={sets}
+            onChangeText={setSets}
+            keyboardType="number-pad"
+            placeholder="0"
+          />
+        </View>
+      </View>
+
+      <View style={styles.fieldGroup}>
+        <View style={styles.notesHeader}>
+          <Text style={styles.label}>備考</Text>
+          <Text style={styles.noteOptional}>任意</Text>
+        </View>
+        <TextInput
+          multiline
+          style={styles.notesArea}
+          value={notes}
+          onChangeText={setNotes}
+          placeholder="気づいたことなど..."
+        />
       </View>
 
       <Pressable
-        disabled={parsedItems.length === 0 || isSaving}
-        style={[styles.button, styles.buttonSuccess, (parsedItems.length === 0 || isSaving) && styles.buttonDisabled]}
+        disabled={!canSave || isSaving}
+        style={[styles.saveButton, (!canSave || isSaving) && styles.buttonDisabled]}
         onPress={onSave}
       >
-        {isSaving ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>解析結果を保存</Text>}
+        {isSaving ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveButtonText}>記録を保存する</Text>}
       </Pressable>
     </ScrollView>
   );
@@ -161,90 +260,179 @@ export function RecordScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    gap: 16,
-    backgroundColor: '#f6f8fb',
+    paddingBottom: 96,
+    gap: 18,
+    backgroundColor: '#f4f4f5',
   },
   title: {
-    fontSize: 24,
+    fontSize: 36,
     fontWeight: '700',
-    color: '#102542',
+    color: '#14151e',
+    marginTop: 6,
   },
-  description: {
-    color: '#334e68',
-  },
-  block: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
+  voiceBlock: {
+    backgroundColor: '#dfe3f4',
+    borderRadius: 16,
     padding: 12,
-    gap: 8,
-  },
-  label: {
-    fontWeight: '600',
-    color: '#102542',
-  },
-  textArea: {
-    minHeight: 120,
-    borderColor: '#d9e2ec',
     borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
+    borderColor: '#d3d9f1',
+    gap: 10,
+  },
+  voiceHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  voiceTitle: {
+    color: '#2f339f',
+    fontWeight: '700',
+    fontSize: 17,
+  },
+  voiceInputWrap: {
+    position: 'relative',
+  },
+  voiceTextArea: {
+    minHeight: 108,
+    borderColor: '#d4d5dc',
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    paddingRight: 54,
     textAlignVertical: 'top',
     backgroundColor: '#fff',
+    fontSize: 18,
+    color: '#1f2430',
   },
-  row: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  button: {
-    borderRadius: 8,
-    minHeight: 44,
+  micFab: {
+    position: 'absolute',
+    right: 10,
+    bottom: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 14,
   },
-  buttonPrimary: {
-    backgroundColor: '#175fe8',
+  micFabPrimary: {
+    backgroundColor: '#4d3ff0',
   },
-  buttonDanger: {
-    backgroundColor: '#cc2b52',
+  micFabDanger: {
+    backgroundColor: '#d64545',
   },
-  buttonSuccess: {
-    backgroundColor: '#1f9d55',
+  parseButton: {
+    borderRadius: 12,
+    minHeight: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4d3ff0',
   },
-  buttonGhost: {
-    borderWidth: 1,
-    borderColor: '#bcccdc',
-    backgroundColor: '#fff',
-  },
-  buttonGhostText: {
-    color: '#243b53',
-    fontWeight: '600',
-  },
-  buttonText: {
+  parseButtonText: {
     color: '#fff',
     fontWeight: '700',
+    fontSize: 16,
+  },
+  fieldGroup: {
+    gap: 8,
+  },
+  notesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  label: {
+    fontWeight: '700',
+    color: '#30303a',
+    fontSize: 32,
+  },
+  muted: {
+    color: '#74757d',
+    fontWeight: '500',
+    fontSize: 20,
+  },
+  noteOptional: {
+    color: '#92939a',
+    fontSize: 22,
+    fontWeight: '500',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#d4d5dc',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    color: '#10111a',
+    fontSize: 26,
+    fontWeight: '600',
+  },
+  dateRow: {
+    position: 'relative',
+  },
+  datePreview: {
+    position: 'absolute',
+    right: 14,
+    top: 16,
+    fontSize: 22,
+    color: '#11121b',
+    fontWeight: '700',
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#d4d5dc',
+    borderRadius: 14,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+  },
+  metricsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  metricBox: {
+    flex: 1,
+    gap: 8,
+  },
+  metricInput: {
+    borderWidth: 1,
+    borderColor: '#d4d5dc',
+    borderRadius: 14,
+    backgroundColor: '#fff',
+    minHeight: 54,
+    fontSize: 26,
+    color: '#1b1c26',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  notesArea: {
+    minHeight: 120,
+    borderWidth: 1,
+    borderColor: '#d4d5dc',
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    textAlignVertical: 'top',
+    backgroundColor: '#fff',
+    color: '#1b1c26',
+    fontSize: 22,
+  },
+  saveButton: {
+    borderRadius: 14,
+    minHeight: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#151721',
+    marginTop: 6,
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 28,
   },
   buttonDisabled: {
     opacity: 0.4,
   },
   errorText: {
     color: '#d64545',
-  },
-  emptyText: {
-    color: '#627d98',
-  },
-  resultCard: {
-    borderWidth: 1,
-    borderColor: '#d9e2ec',
-    borderRadius: 8,
-    padding: 10,
-    gap: 4,
-  },
-  resultTitle: {
-    fontWeight: '700',
-    color: '#102542',
-  },
-  resultText: {
-    color: '#334e68',
+    fontSize: 18,
   },
 });
