@@ -281,7 +281,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
                 })
               }
               style={{ padding: SPACING.sm, borderRadius: 8, backgroundColor: isBodyweight ? COLORS.accent : COLORS.bgMuted, marginRight: SPACING.xs }}
-            >x
+            >
               <Text style={{ color: isBodyweight ? COLORS.white : COLORS.textDarkAlt, fontWeight: FONT_WEIGHTS.bold }}>自重</Text>
             </Pressable>
           </View>
