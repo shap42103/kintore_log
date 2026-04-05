@@ -4,22 +4,24 @@ import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
 import {
-    Alert,
-    Modal, Platform, Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  Alert,
+  Modal, Platform, Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { Calendar, type DateData } from 'react-native-calendars';
 
 import TrainingForm from '../components/TrainingForm';
+import FONT_SIZES from '../constants/fontSizes';
+import FONT_WEIGHTS from '../constants/fontWeights';
 import COLORS from '../constants/colors';
 import {
-    deleteHistory,
-    getExercises,
-    getHistories,
-    updateHistory,
+  deleteHistory,
+  getExercises,
+  getHistories,
+  updateHistory,
 } from '../db/database';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import { parseTrainingWithGemini } from '../services/geminiService';
@@ -32,6 +34,7 @@ type EditForm = {
   weight: string;
   reps: string;
   sets: string;
+  isBodyweight?: boolean;
   notes: string;
 };
 
@@ -425,8 +428,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.backgroundLight,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: FONT_SIZES.xxl,
+    fontWeight: FONT_WEIGHTS.bold,
     color: COLORS.textPrimary,
   },
   block: {
@@ -474,15 +477,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   filterTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: FONT_SIZES.lg,
+    fontWeight: FONT_WEIGHTS.bold,
   },
   filterCloseButton: {
     padding: 8,
   },
   filterCloseText: {
     color: COLORS.textMuted,
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
   },
   filterBody: {
     gap: 12,
@@ -506,7 +509,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   cardTitle: {
-    fontWeight: '700',
+    fontWeight: FONT_WEIGHTS.bold,
     color: COLORS.textPrimary,
   },
   cardText: {
@@ -545,11 +548,11 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: COLORS.white,
-    fontWeight: '700',
+    fontWeight: FONT_WEIGHTS.bold,
   },
   buttonGhostText: {
     color: COLORS.textDark,
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
   },
   filterIconRow: {
     flexDirection: 'row',
@@ -599,7 +602,7 @@ const styles = StyleSheet.create({
   periodError: {
     color: COLORS.dangerAlt,
     marginTop: 6,
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
   },
   modalContainer: {
     padding: 16,

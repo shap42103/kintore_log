@@ -1,8 +1,10 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import FONT_SIZES from '../constants/fontSizes';
+import FONT_WEIGHTS from '../constants/fontWeights';
 import COLORS from '../constants/colors';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import type { Exercise } from '../types';
@@ -49,7 +51,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
   const [sets, setSets] = useState<number>(initial.sets ?? 0);
   const [pickerKey, setPickerKey] = useState(0);
   const [notes, setNotes] = useState(initial.notes ?? '');
-  const [voiceText, setVoiceText] = useState(initial['voiceText' as keyof typeof initial] ?? '');
+  const [voiceText, setVoiceText] = useState<string>(String((initial as any)['voiceText'] ?? ''));
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -214,7 +216,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
         <Text style={styles.label}>日時</Text>
         <View style={styles.dateRow}>
           <Pressable style={styles.input} onPress={() => setShowDatePicker(true)}>
-            <Text style={{ fontSize: 20, fontWeight: '400', color: COLORS.textBlack }}>{formatDateLabel}</Text>
+            <Text style={{ fontSize: FONT_SIZES.xl, fontWeight: FONT_WEIGHTS.regular, color: COLORS.textBlack }}>{formatDateLabel}</Text>
           </Pressable>
           {showDatePicker && (
             <DateTimePicker
@@ -244,7 +246,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>種目</Text>
         <View style={styles.pickerWrapper}>
-          <Picker selectedValue={exerciseId} onValueChange={(value) => setExerciseId(Number(value))} style={{ color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700' }}>
+          <Picker selectedValue={exerciseId} onValueChange={(value) => setExerciseId(Number(value))} style={{ color: COLORS.textBlack, fontSize: FONT_SIZES.lg, height: 56, fontWeight: FONT_WEIGHTS.bold }} itemStyle={{ color: COLORS.textBlack, fontSize: FONT_SIZES.lg, height: 56, fontWeight: FONT_WEIGHTS.bold }}>
             <Picker.Item label="種目を選択" value={0} />
             {exercises.map((exercise) => (
               <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
@@ -279,7 +281,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
               }
               style={{ padding: 8, borderRadius: 8, backgroundColor: isBodyweight ? COLORS.accent : COLORS.bgMuted, marginRight: 4 }}
             >x
-              <Text style={{ color: isBodyweight ? COLORS.white : COLORS.textDarkAlt, fontWeight: '700' }}>自重</Text>
+              <Text style={{ color: isBodyweight ? COLORS.white : COLORS.textDarkAlt, fontWeight: FONT_WEIGHTS.bold }}>自重</Text>
             </Pressable>
           </View>
         </View>
@@ -287,7 +289,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
         <View style={[styles.metricBox, { flex: metricFlexes?.reps ?? 1.0, alignItems: 'flex-end' }]}>
           <Text style={[styles.label, { alignSelf: 'flex-start' }]}>回数</Text>
           <View style={[styles.metricPickerWrapper, { width: '100%', alignItems: 'flex-end' }]}>
-            <Picker key={'reps-' + pickerKey} selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ width: 84, color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700' }}>
+            <Picker key={'reps-' + pickerKey} selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ width: 84, color: COLORS.textBlack, fontSize: FONT_SIZES.lg, height: 56, fontWeight: FONT_WEIGHTS.bold, textAlign: 'right' }} itemStyle={{ color: COLORS.textBlack, fontSize: FONT_SIZES.lg, height: 56, fontWeight: FONT_WEIGHTS.bold }}>
                 {Array.from({ length: 21 }).map((_, i) => (
                   <Picker.Item key={i} label={String(i)} value={i} />
                 ))}
@@ -298,7 +300,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
         <View style={[styles.metricBox, { flex: metricFlexes?.sets ?? 1.0, alignItems: 'flex-end' }]}>
           <Text style={[styles.label, { alignSelf: 'flex-start' }]}>セット</Text>
           <View style={[styles.metricPickerWrapper, { width: '100%', alignItems: 'flex-end' }]}>
-            <Picker key={'sets-' + pickerKey} selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ width: 84, color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700' }}>
+            <Picker key={'sets-' + pickerKey} selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ width: 84, color: COLORS.textBlack, fontSize: FONT_SIZES.lg, height: 56, fontWeight: FONT_WEIGHTS.bold, textAlign: 'right' }} itemStyle={{ color: COLORS.textBlack, fontSize: FONT_SIZES.lg, height: 56, fontWeight: FONT_WEIGHTS.bold }}>
                 {Array.from({ length: 11 }).map((_, i) => (
                   <Picker.Item key={i} label={String(i)} value={i} />
                 ))}
@@ -340,15 +342,15 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
       ) : null}
       <Modal visible={debugModalVisible} animationType="slide" onRequestClose={() => setDebugModalVisible(false)}>
         <ScrollView contentContainerStyle={{ padding: 16 }}>
-          <Text style={{ fontWeight: '700', fontSize: 18, marginBottom: 8 }}>解析結果（デバッグ）</Text>
+          <Text style={{ fontWeight: FONT_WEIGHTS.bold, fontSize: FONT_SIZES.lg, marginBottom: 8 }}>解析結果（デバッグ）</Text>
           <Text style={{ fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', backgroundColor: COLORS.codeBg, padding: 12, borderRadius: 8 }}>{JSON.stringify(debugCandidate ?? {}, null, 2)}</Text>
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
             <Pressable style={[styles.saveButton, { flex: 1 }]} onPress={() => handleDebugApply(true)}>
               <Text style={styles.saveButtonText}>適用する</Text>
             </Pressable>
-            <Pressable style={[styles.saveButton, { flex: 1, backgroundColor: COLORS.mutedBorder }]} onPress={() => handleDebugApply(false)}>
-              <Text style={{ color: COLORS.textDarkAlt, fontWeight: '700' }}>破棄</Text>
-            </Pressable>
+              <Pressable style={[styles.saveButton, { flex: 1, backgroundColor: COLORS.mutedBorder }]} onPress={() => handleDebugApply(false)}>
+                <Text style={{ color: COLORS.textDarkAlt, fontWeight: FONT_WEIGHTS.bold }}>破棄</Text>
+              </Pressable>
           </View>
           <Pressable style={{ marginTop: 12 }} onPress={() => setDebugModalVisible(false)}>
             <Text style={{ color: COLORS.textGray }}>閉じる</Text>
@@ -382,8 +384,8 @@ const styles = StyleSheet.create({
   },
   voiceTitle: {
     color: COLORS.accentDark,
-    fontWeight: '700',
-    fontSize: 12,
+    fontWeight: FONT_WEIGHTS.bold,
+    fontSize: FONT_SIZES.xs,
   },
   voiceInputWrap: {
     position: 'relative',
@@ -397,7 +399,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingRight: 48,
     backgroundColor: COLORS.white,
-    fontSize: 14,
+    fontSize: FONT_SIZES.sm,
     color: COLORS.textDark3,
     textAlignVertical: 'top',
   },
@@ -426,8 +428,8 @@ const styles = StyleSheet.create({
   },
   parseButtonText: {
     color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 11,
+    fontWeight: FONT_WEIGHTS.bold,
+    fontSize: FONT_SIZES.xxs,
   },
   fieldGroup: {
     gap: 6,
@@ -438,19 +440,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   label: {
-    fontWeight: '700',
+    fontWeight: FONT_WEIGHTS.bold,
     color: COLORS.textMutedLight,
-    fontSize: 16,
+    fontSize: FONT_SIZES.md,
   },
   muted: {
     color: COLORS.textMuted,
-    fontWeight: '500',
-    fontSize: 14,
+    fontWeight: FONT_WEIGHTS.medium,
+    fontSize: FONT_SIZES.sm,
   },
   noteOptional: {
     color: COLORS.textMutedLight,
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: FONT_SIZES.sm,
+    fontWeight: FONT_WEIGHTS.medium,
   },
   input: {
     borderWidth: 1,
@@ -460,8 +462,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: COLORS.white,
     color: COLORS.textBlack,
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: FONT_SIZES.base,
+    fontWeight: FONT_WEIGHTS.semibold,
     minHeight: 56,
     justifyContent: 'center',
   },
@@ -493,10 +495,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     minHeight: 64,
     paddingVertical: 8,
-    fontSize: 18,
+    fontSize: FONT_SIZES.lg,
     lineHeight: 22,
     color: COLORS.textDark3,
-    fontWeight: '400',
+    fontWeight: FONT_WEIGHTS.regular,
     textAlign: 'left',
     paddingHorizontal: 12,
     textAlignVertical: 'center',
@@ -521,7 +523,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     backgroundColor: COLORS.white,
     color: COLORS.textDark3,
-    fontSize: 14,
+    fontSize: FONT_SIZES.sm,
   },
   saveButton: {
     borderRadius: 12,
@@ -533,15 +535,15 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 18,
+    fontWeight: FONT_WEIGHTS.bold,
+    fontSize: FONT_SIZES.lg,
   },
   buttonDisabled: {
     opacity: 0.4,
   },
   errorText: {
     color: COLORS.dangerAlt,
-    fontSize: 18,
+    fontSize: FONT_SIZES.lg,
   },
 });
 

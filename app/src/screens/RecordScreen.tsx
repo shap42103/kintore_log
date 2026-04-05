@@ -1,6 +1,8 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
+import FONT_SIZES from '../constants/fontSizes';
+import FONT_WEIGHTS from '../constants/fontWeights';
 
 import TrainingForm from '../components/TrainingForm';
 import COLORS from '../constants/colors';
@@ -95,8 +97,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: FONT_SIZES.xl2,
+    fontWeight: FONT_WEIGHTS.bold,
     color: COLORS.textHeavy,
     marginTop: 6,
   },
@@ -115,8 +117,8 @@ const styles = StyleSheet.create({
   },
   voiceTitle: {
     color: COLORS.accentDark,
-    fontWeight: '700',
-    fontSize: 12,
+    fontWeight: FONT_WEIGHTS.bold,
+    fontSize: FONT_SIZES.xs,
   },
   voiceInputWrap: {
     position: 'relative',
@@ -130,7 +132,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingRight: 48,
     backgroundColor: COLORS.white,
-    fontSize: 14,
+    fontSize: FONT_SIZES.sm,
     color: COLORS.textDark2,
     textAlignVertical: 'top',
   },
@@ -159,8 +161,8 @@ const styles = StyleSheet.create({
   },
   parseButtonText: {
     color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 11,
+    fontWeight: FONT_WEIGHTS.bold,
+    fontSize: FONT_SIZES.xxs,
   },
   fieldGroup: {
     gap: 6,
@@ -171,19 +173,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   label: {
-    fontWeight: '700',
+    fontWeight: FONT_WEIGHTS.bold,
     color: COLORS.textMutedLight,
-    fontSize: 16,
+    fontSize: FONT_SIZES.md,
   },
   muted: {
     color: COLORS.textMuted,
-    fontWeight: '500',
-    fontSize: 14,
+    fontWeight: FONT_WEIGHTS.medium,
+    fontSize: FONT_SIZES.sm,
   },
   noteOptional: {
     color: COLORS.textMutedLight,
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: FONT_SIZES.sm,
+    fontWeight: FONT_WEIGHTS.medium,
   },
   input: {
     borderWidth: 1,
@@ -193,8 +195,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: COLORS.white,
     color: COLORS.textBlack,
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: FONT_SIZES.base,
+    fontWeight: FONT_WEIGHTS.semibold,
     minHeight: 56,
     justifyContent: 'center',
   },
@@ -227,10 +229,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     minHeight: 64,
     paddingVertical: 8,
-    fontSize: 18,
+    fontSize: FONT_SIZES.lg,
     lineHeight: 22,
     color: COLORS.textDark3,
-    fontWeight: '400',
+    fontWeight: FONT_WEIGHTS.regular,
     textAlign: 'left',
     paddingHorizontal: 12,
     textAlignVertical: 'center',
@@ -255,7 +257,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     backgroundColor: COLORS.white,
     color: COLORS.textDark3,
-    fontSize: 14,
+    fontSize: FONT_SIZES.sm,
   },
   saveButton: {
     borderRadius: 12,
@@ -267,14 +269,14 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 18,
+    fontWeight: FONT_WEIGHTS.bold,
+    fontSize: FONT_SIZES.lg,
   },
   buttonDisabled: {
     opacity: 0.4,
   },
   errorText: {
     color: COLORS.dangerAlt,
-    fontSize: 18,
+    fontSize: FONT_SIZES.lg,
   },
 });
