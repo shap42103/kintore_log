@@ -46,6 +46,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
   }, [isBodyweight]);
   const [reps, setReps] = useState<number>(initial.reps ?? 0);
   const [sets, setSets] = useState<number>(initial.sets ?? 0);
+  const [pickerKey, setPickerKey] = useState(0);
   const [notes, setNotes] = useState(initial.notes ?? '');
   const [voiceText, setVoiceText] = useState(initial['voiceText' as keyof typeof initial] ?? '');
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -140,6 +141,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
     setReps(Number(first.reps ?? 0));
     setSets(Number(first.sets ?? 0));
     setNotes(first.notes ?? '');
+    setPickerKey((k) => k + 1);
   };
 
   // Debug modal: show parsed result for manual apply/inspect
@@ -274,17 +276,17 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
                   return next;
                 })
               }
-              style={{ padding: 8, borderRadius: 8, backgroundColor: isBodyweight ? '#4d3ff0' : '#ededf2', marginRight: 24 }}
+              style={{ padding: 8, borderRadius: 8, backgroundColor: isBodyweight ? '#4d3ff0' : '#ededf2', marginRight: 4 }}
             >
               <Text style={{ color: isBodyweight ? '#fff' : '#333', fontWeight: '700' }}>自重</Text>
             </Pressable>
           </View>
         </View>
 
-        <View style={[styles.metricBox, { flex: metricFlexes?.reps ?? 0.8, alignItems: 'flex-end' }]}>
+        <View style={[styles.metricBox, { flex: metricFlexes?.reps ?? 1.0, alignItems: 'flex-end' }]}>
           <Text style={[styles.label, { alignSelf: 'flex-start' }]}>回数</Text>
           <View style={[styles.metricPickerWrapper, { width: '100%', alignItems: 'flex-end' }]}>
-            <Picker selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ width: 76, color: '#111', fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
+            <Picker key={'reps-' + pickerKey} selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ width: 84, color: '#111', fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
                 {Array.from({ length: 21 }).map((_, i) => (
                   <Picker.Item key={i} label={String(i)} value={i} />
                 ))}
@@ -292,10 +294,10 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
           </View>
         </View>
 
-        <View style={[styles.metricBox, { flex: metricFlexes?.sets ?? 0.8, alignItems: 'flex-end' }]}>
+        <View style={[styles.metricBox, { flex: metricFlexes?.sets ?? 1.0, alignItems: 'flex-end' }]}>
           <Text style={[styles.label, { alignSelf: 'flex-start' }]}>セット</Text>
           <View style={[styles.metricPickerWrapper, { width: '100%', alignItems: 'flex-end' }]}>
-            <Picker selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ width: 76, color: '#111', fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
+            <Picker key={'sets-' + pickerKey} selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ width: 84, color: '#111', fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
                 {Array.from({ length: 11 }).map((_, i) => (
                   <Picker.Item key={i} label={String(i)} value={i} />
                 ))}
