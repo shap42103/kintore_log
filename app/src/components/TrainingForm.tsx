@@ -365,7 +365,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
 const styles = StyleSheet.create({
   container: {
     padding: SPACING.lg,
-    paddingTop: SPACING.xxs,
+    paddingTop: SPACING.sm,
     paddingBottom: SPACING.xxl,
     gap: SPACING.lg,
     backgroundColor: COLORS.surface,
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
   voiceHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.xxs,
+    gap: SPACING.sm,
   },
   voiceTitle: {
     color: COLORS.accentDark,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderGray2,
     borderWidth: 1,
     borderRadius: 12,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     paddingRight: SPACING.huge,
     backgroundColor: COLORS.white,
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xxs,
   },
   fieldGroup: {
-    gap: SPACING.xxs,
+    gap: SPACING.sm,
   },
   notesHeader: {
     flexDirection: 'row',
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderGray2,
     borderRadius: 12,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     backgroundColor: COLORS.white,
     color: COLORS.textBlack,
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   },
   metricsRow: {
     flexDirection: 'row',
-    gap: SPACING.md,
+    gap: SPACING.lg,
   },
   metricBox: {
     flex: 1,
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderGray2,
     borderRadius: 12,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     textAlignVertical: 'top',
     backgroundColor: COLORS.white,
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.bgDark,
-    marginTop: SPACING.xxs,
+    marginTop: SPACING.sm,
   },
   saveButtonText: {
     color: COLORS.white,

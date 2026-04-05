@@ -447,14 +447,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     backgroundColor: COLORS.white,
     color: COLORS.textBlack,
   },
-  filterSummaryRow: {
+    filterSummaryRow: {
     flexDirection: 'column',
-    gap: SPACING.xxs,
+    gap: SPACING.sm,
     marginBottom: SPACING.sm,
   },
   filterSummaryText: {
@@ -555,9 +555,9 @@ const styles = StyleSheet.create({
     color: COLORS.textDark,
     fontWeight: FONT_WEIGHTS.semibold,
   },
-  filterIconRow: {
+    filterIconRow: {
     flexDirection: 'row',
-    gap: SPACING.md,
+    gap: SPACING.lg,
     marginTop: SPACING.sm,
   },
   filterIconButton: {
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  filterDot: {
+    filterDot: {
     position: 'absolute',
     top: SPACING.xs,
     right: SPACING.xs,
@@ -600,14 +600,14 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.5,
   },
-  periodError: {
+    periodError: {
     color: COLORS.dangerAlt,
-    marginTop: SPACING.xxs,
+    marginTop: SPACING.sm,
     fontWeight: FONT_WEIGHTS.semibold,
   },
-  modalContainer: {
+    modalContainer: {
     padding: SPACING.xl,
-    gap: SPACING.md,
+    gap: SPACING.lg,
     backgroundColor: COLORS.backgroundLight,
   },
   modalTitle: {

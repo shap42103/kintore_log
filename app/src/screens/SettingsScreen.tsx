@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     backgroundColor: COLORS.white,
   },
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     borderRadius: 8,
     padding: SPACING.sm,
-    gap: SPACING.xxs,
+    gap: SPACING.sm,
   },
   cardTitle: {
     fontWeight: FONT_WEIGHTS.semibold,
@@ -217,9 +217,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
-    paddingVertical: SPACING.xxs,
+    paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.sm,
-    marginBottom: SPACING.xxs,
+    marginBottom: SPACING.sm,
     backgroundColor: COLORS.white,
   },
   listText: {
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
   listInput: {
     flex: 1,
-    paddingVertical: SPACING.xxs,
+    paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.sm,
     fontSize: FONT_SIZES.sm,
     borderWidth: 1,
