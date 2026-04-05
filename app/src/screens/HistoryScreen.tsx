@@ -14,9 +14,10 @@ import {
 import { Calendar, type DateData } from 'react-native-calendars';
 
 import TrainingForm from '../components/TrainingForm';
+import COLORS from '../constants/colors';
 import FONT_SIZES from '../constants/fontSizes';
 import FONT_WEIGHTS from '../constants/fontWeights';
-import COLORS from '../constants/colors';
+import SPACING from '../constants/spacing';
 import {
   deleteHistory,
   getExercises,
@@ -243,8 +244,8 @@ export function HistoryScreen() {
                   </Picker>
                 </View>
 
-                <Text style={[styles.label, { marginTop: 12 }]}>期間で絞り込み</Text>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
+                <Text style={[styles.label, { marginTop: SPACING.lg }]}>期間で絞り込み</Text>
+                <View style={{ flexDirection: 'row', gap: SPACING.sm }}>
                   <Pressable style={styles.input} onPress={() => setShowFromPicker(true)}>
                     <Text style={{ color: COLORS.textBlack }}>{fromDate || '開始日'}</Text>
                   </Pressable>
@@ -422,9 +423,9 @@ export function HistoryScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingTop: 8,
-    gap: 16,
+    padding: SPACING.xl,
+    paddingTop: SPACING.sm,
+    gap: SPACING.xl,
     backgroundColor: COLORS.backgroundLight,
   },
   title: {
@@ -435,8 +436,8 @@ const styles = StyleSheet.create({
   block: {
     backgroundColor: COLORS.white,
     borderRadius: 12,
-    padding: 12,
-    gap: 8,
+    padding: SPACING.lg,
+    gap: SPACING.sm,
   },
   label: {
     fontWeight: '600',
@@ -446,15 +447,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     backgroundColor: COLORS.white,
     color: COLORS.textBlack,
   },
   filterSummaryRow: {
     flexDirection: 'column',
-    gap: 6,
-    marginBottom: 8,
+    gap: SPACING.xxs,
+    marginBottom: SPACING.sm,
   },
   filterSummaryText: {
     color: COLORS.textSecondary,
@@ -468,32 +469,32 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 16,
+    padding: SPACING.xl,
   },
   filterHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: SPACING.lg,
   },
   filterTitle: {
     fontSize: FONT_SIZES.lg,
     fontWeight: FONT_WEIGHTS.bold,
   },
   filterCloseButton: {
-    padding: 8,
+    padding: SPACING.sm,
   },
   filterCloseText: {
     color: COLORS.textMuted,
     fontWeight: FONT_WEIGHTS.semibold,
   },
   filterBody: {
-    gap: 12,
+    gap: SPACING.lg,
   },
   filterFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: SPACING.xl,
   },
   pickerWrapper: {
     borderWidth: 1,
@@ -505,8 +506,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
-    padding: 10,
-    gap: 4,
+    padding: SPACING.sm,
+    gap: SPACING.xs,
   },
   cardTitle: {
     fontWeight: FONT_WEIGHTS.bold,
@@ -517,7 +518,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    gap: 8,
+    gap: SPACING.sm,
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -531,7 +532,7 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 8,
     minHeight: 42,
-    paddingHorizontal: 12,
+    paddingHorizontal: SPACING.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -556,8 +557,8 @@ const styles = StyleSheet.create({
   },
   filterIconRow: {
     flexDirection: 'row',
-    gap: 10,
-    marginTop: 8,
+    gap: SPACING.md,
+    marginTop: SPACING.sm,
   },
   filterIconButton: {
     width: 40,
@@ -570,9 +571,9 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderLight,
   },
   iconBlock: {
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
     alignItems: 'flex-end',
-    paddingHorizontal: 16,
+    paddingHorizontal: SPACING.xl,
   },
   iconWithDot: {
     width: 36,
@@ -582,11 +583,11 @@ const styles = StyleSheet.create({
   },
   filterDot: {
     position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    top: SPACING.xs,
+    right: SPACING.xs,
+    width: SPACING.sm,
+    height: SPACING.sm,
+    borderRadius: SPACING.xs,
     backgroundColor: COLORS.dangerAlt,
   },
   actionIconButton: {
@@ -594,24 +595,24 @@ const styles = StyleSheet.create({
     height: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
+    marginLeft: SPACING.sm,
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   periodError: {
     color: COLORS.dangerAlt,
-    marginTop: 6,
+    marginTop: SPACING.xxs,
     fontWeight: FONT_WEIGHTS.semibold,
   },
   modalContainer: {
-    padding: 16,
-    gap: 10,
+    padding: SPACING.xl,
+    gap: SPACING.md,
     backgroundColor: COLORS.backgroundLight,
   },
   modalTitle: {
-    marginTop: 36,
-    marginBottom: 8,
+    marginTop: SPACING.xxxl,
+    marginBottom: SPACING.sm,
   },
   voiceInput: {
     minHeight: 90,

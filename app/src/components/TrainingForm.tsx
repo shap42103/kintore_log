@@ -3,9 +3,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import COLORS from '../constants/colors';
 import FONT_SIZES from '../constants/fontSizes';
 import FONT_WEIGHTS from '../constants/fontWeights';
-import COLORS from '../constants/colors';
+import SPACING from '../constants/spacing';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import type { Exercise } from '../types';
 
@@ -260,7 +261,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
           <Text style={styles.label}>
               重量 <Text style={styles.muted}>(kg)</Text>
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.sm }}>
             <TextInput
               style={[styles.metricInput, { flex: 1 }, isBodyweight && { opacity: 0.6 }]}
               value={weight}
@@ -279,7 +280,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
                   return next;
                 })
               }
-              style={{ padding: 8, borderRadius: 8, backgroundColor: isBodyweight ? COLORS.accent : COLORS.bgMuted, marginRight: 4 }}
+              style={{ padding: SPACING.sm, borderRadius: 8, backgroundColor: isBodyweight ? COLORS.accent : COLORS.bgMuted, marginRight: SPACING.xs }}
             >x
               <Text style={{ color: isBodyweight ? COLORS.white : COLORS.textDarkAlt, fontWeight: FONT_WEIGHTS.bold }}>自重</Text>
             </Pressable>
@@ -336,15 +337,15 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
       </Pressable>
 
       {onClose ? (
-        <Pressable style={[styles.saveButton, { backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.mutedBorder, marginTop: 8 }]} onPress={onClose}>
+        <Pressable style={[styles.saveButton, { backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.mutedBorder, marginTop: SPACING.sm }]} onPress={onClose}>
           <Text style={{ color: COLORS.textDarkAlt }}>閉じる</Text>
         </Pressable>
       ) : null}
       <Modal visible={debugModalVisible} animationType="slide" onRequestClose={() => setDebugModalVisible(false)}>
-        <ScrollView contentContainerStyle={{ padding: 16 }}>
-          <Text style={{ fontWeight: FONT_WEIGHTS.bold, fontSize: FONT_SIZES.lg, marginBottom: 8 }}>解析結果（デバッグ）</Text>
-          <Text style={{ fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', backgroundColor: COLORS.codeBg, padding: 12, borderRadius: 8 }}>{JSON.stringify(debugCandidate ?? {}, null, 2)}</Text>
-          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+        <ScrollView contentContainerStyle={{ padding: SPACING.xl }}>
+          <Text style={{ fontWeight: FONT_WEIGHTS.bold, fontSize: FONT_SIZES.lg, marginBottom: SPACING.sm }}>解析結果（デバッグ）</Text>
+          <Text style={{ fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', backgroundColor: COLORS.codeBg, padding: SPACING.lg, borderRadius: 8 }}>{JSON.stringify(debugCandidate ?? {}, null, 2)}</Text>
+          <View style={{ flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.lg }}>
             <Pressable style={[styles.saveButton, { flex: 1 }]} onPress={() => handleDebugApply(true)}>
               <Text style={styles.saveButtonText}>適用する</Text>
             </Pressable>
@@ -352,7 +353,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
                 <Text style={{ color: COLORS.textDarkAlt, fontWeight: FONT_WEIGHTS.bold }}>破棄</Text>
               </Pressable>
           </View>
-          <Pressable style={{ marginTop: 12 }} onPress={() => setDebugModalVisible(false)}>
+          <Pressable style={{ marginTop: SPACING.lg }} onPress={() => setDebugModalVisible(false)}>
             <Text style={{ color: COLORS.textGray }}>閉じる</Text>
           </Pressable>
         </ScrollView>
@@ -363,24 +364,24 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
 
 const styles = StyleSheet.create({
   container: {
-    padding: 12,
-    paddingTop: 6,
-    paddingBottom: 24,
-    gap: 12,
+    padding: SPACING.lg,
+    paddingTop: SPACING.xxs,
+    paddingBottom: SPACING.xxl,
+    gap: SPACING.lg,
     backgroundColor: COLORS.surface,
   },
   voiceBlock: {
     backgroundColor: COLORS.borderLighter,
     borderRadius: 12,
-    padding: 8,
+    padding: SPACING.sm,
     borderWidth: 1,
     borderColor: COLORS.borderGray,
-    gap: 8,
+    gap: SPACING.sm,
   },
   voiceHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: SPACING.xxs,
   },
   voiceTitle: {
     color: COLORS.accentDark,
@@ -395,9 +396,9 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderGray2,
     borderWidth: 1,
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    paddingRight: 48,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    paddingRight: SPACING.huge,
     backgroundColor: COLORS.white,
     fontSize: FONT_SIZES.sm,
     color: COLORS.textDark3,
@@ -432,7 +433,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xxs,
   },
   fieldGroup: {
-    gap: 6,
+    gap: SPACING.xxs,
   },
   notesHeader: {
     flexDirection: 'row',
@@ -458,8 +459,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderGray2,
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     backgroundColor: COLORS.white,
     color: COLORS.textBlack,
     fontSize: FONT_SIZES.base,
@@ -478,15 +479,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     minHeight: 56,
     justifyContent: 'center',
-    paddingVertical: 4,
+    paddingVertical: SPACING.xs,
   },
   metricsRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: SPACING.md,
   },
   metricBox: {
     flex: 1,
-    gap: 8,
+    gap: SPACING.sm,
   },
   metricInput: {
     borderWidth: 1,
@@ -494,13 +495,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: COLORS.white,
     minHeight: 64,
-    paddingVertical: 8,
+    paddingVertical: SPACING.sm,
     fontSize: FONT_SIZES.lg,
     lineHeight: 22,
     color: COLORS.textDark3,
     fontWeight: FONT_WEIGHTS.regular,
     textAlign: 'left',
-    paddingHorizontal: 12,
+    paddingHorizontal: SPACING.lg,
     textAlignVertical: 'center',
   },
   metricPickerWrapper: {
@@ -511,15 +512,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     minHeight: 56,
     justifyContent: 'center',
-    paddingVertical: 4,
+    paddingVertical: SPACING.xs,
   },
   notesArea: {
     minHeight: 80,
     borderWidth: 1,
     borderColor: COLORS.borderGray2,
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     textAlignVertical: 'top',
     backgroundColor: COLORS.white,
     color: COLORS.textDark3,
@@ -531,7 +532,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.bgDark,
-    marginTop: 6,
+    marginTop: SPACING.xxs,
   },
   saveButtonText: {
     color: COLORS.white,

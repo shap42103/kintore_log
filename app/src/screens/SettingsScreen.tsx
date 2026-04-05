@@ -3,9 +3,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import COLORS from '../constants/colors';
 import FONT_SIZES from '../constants/fontSizes';
 import FONT_WEIGHTS from '../constants/fontWeights';
-import COLORS from '../constants/colors';
+import SPACING from '../constants/spacing';
 import { addExercise, deleteExercise, getExercises, updateExercise } from '../db/database';
 import type { Exercise } from '../types';
 
@@ -167,9 +168,9 @@ export function SettingsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingTop: 8,
-    gap: 16,
+    padding: SPACING.xl,
+    paddingTop: SPACING.sm,
+    gap: SPACING.xl,
     backgroundColor: COLORS.backgroundLight,
   },
   title: {
@@ -183,8 +184,8 @@ const styles = StyleSheet.create({
   block: {
     backgroundColor: COLORS.white,
     borderRadius: 12,
-    padding: 12,
-    gap: 8,
+    padding: SPACING.lg,
+    gap: SPACING.sm,
   },
   label: {
     fontWeight: FONT_WEIGHTS.semibold,
@@ -194,16 +195,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     backgroundColor: COLORS.white,
   },
   card: {
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
-    padding: 8,
-    gap: 6,
+    padding: SPACING.sm,
+    gap: SPACING.xxs,
   },
   cardTitle: {
     fontWeight: FONT_WEIGHTS.semibold,
@@ -216,9 +217,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    marginBottom: 6,
+    paddingVertical: SPACING.xxs,
+    paddingHorizontal: SPACING.sm,
+    marginBottom: SPACING.xxs,
     backgroundColor: COLORS.white,
   },
   listText: {
@@ -229,8 +230,8 @@ const styles = StyleSheet.create({
   },
   listInput: {
     flex: 1,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingVertical: SPACING.xxs,
+    paddingHorizontal: SPACING.sm,
     fontSize: FONT_SIZES.sm,
     borderWidth: 1,
     borderColor: COLORS.borderLight,
@@ -238,8 +239,8 @@ const styles = StyleSheet.create({
   },
   iconRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginLeft: 8,
+    gap: SPACING.sm,
+    marginLeft: SPACING.sm,
   },
   iconButton: {
     width: 32,
@@ -254,21 +255,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
     borderRadius: 8,
-    marginLeft: 8,
+    marginLeft: SPACING.sm,
   },
   addRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: SPACING.sm,
   },
   row: {
     flexDirection: 'row',
-    gap: 8,
+    gap: SPACING.sm,
   },
   button: {
     borderRadius: 8,
     minHeight: 42,
-    paddingHorizontal: 12,
+    paddingHorizontal: SPACING.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },

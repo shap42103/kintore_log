@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 import FONT_SIZES from './src/constants/fontSizes';
 import FONT_WEIGHTS from './src/constants/fontWeights';
+import SPACING from './src/constants/spacing';
 
 import { initializeDatabase } from './src/db/database';
 import { HistoryScreen } from './src/screens/HistoryScreen';
@@ -70,8 +71,8 @@ export default function App() {
           },
           tabBarStyle: {
             height: Platform.OS === 'android' ? 110 : 76,
-            paddingBottom: Platform.OS === 'android' ? 40 : 10,
-            paddingTop: 6,
+            paddingBottom: Platform.OS === 'android' ? SPACING.huge : SPACING.xxs,
+            paddingTop: SPACING.xxs,
             backgroundColor: '#fff',
             borderTopColor: '#e6e6ea',
             borderTopWidth: 1,
@@ -129,8 +130,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f6f8fb',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    gap: 10,
+    paddingHorizontal: SPACING.xxl,
+    gap: SPACING.md,
   },
   loadingText: {
     color: '#334e68',

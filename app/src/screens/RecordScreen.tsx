@@ -6,6 +6,7 @@ import FONT_WEIGHTS from '../constants/fontWeights';
 
 import TrainingForm from '../components/TrainingForm';
 import COLORS from '../constants/colors';
+import SPACING from '../constants/spacing';
 import { addHistories, getExercises } from '../db/database';
 import { parseTrainingWithGemini } from '../services/geminiService';
 import type { Exercise } from '../types';
@@ -90,30 +91,30 @@ export function RecordScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 12,
-    paddingTop: 6,
-    paddingBottom: 80,
-    gap: 12,
+    padding: SPACING.lg,
+    paddingTop: SPACING.xxs,
+    paddingBottom: SPACING.bottomLarge,
+    gap: SPACING.lg,
     backgroundColor: COLORS.surface,
   },
   title: {
     fontSize: FONT_SIZES.xl2,
     fontWeight: FONT_WEIGHTS.bold,
     color: COLORS.textHeavy,
-    marginTop: 6,
+    marginTop: SPACING.xxs,
   },
   voiceBlock: {
     backgroundColor: COLORS.borderLight,
     borderRadius: 12,
-    padding: 8,
+    padding: SPACING.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
-    gap: 8,
+    gap: SPACING.sm,
   },
   voiceHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: SPACING.xxs,
   },
   voiceTitle: {
     color: COLORS.accentDark,
@@ -128,9 +129,9 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     borderWidth: 1,
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    paddingRight: 48,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    paddingRight: SPACING.huge,
     backgroundColor: COLORS.white,
     fontSize: FONT_SIZES.sm,
     color: COLORS.textDark2,
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xxs,
   },
   fieldGroup: {
-    gap: 6,
+    gap: SPACING.xxs,
   },
   notesHeader: {
     flexDirection: 'row',
@@ -191,8 +192,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderGray2,
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     backgroundColor: COLORS.white,
     color: COLORS.textBlack,
     fontSize: FONT_SIZES.base,
@@ -212,15 +213,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     minHeight: 56,
     justifyContent: 'center',
-    paddingVertical: 4,
+    paddingVertical: SPACING.xs,
   },
   metricsRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: SPACING.md,
   },
   metricBox: {
     flex: 1,
-    gap: 8,
+    gap: SPACING.sm,
   },
   metricInput: {
     borderWidth: 1,
@@ -228,13 +229,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: COLORS.white,
     minHeight: 64,
-    paddingVertical: 8,
+    paddingVertical: SPACING.sm,
     fontSize: FONT_SIZES.lg,
     lineHeight: 22,
     color: COLORS.textDark3,
     fontWeight: FONT_WEIGHTS.regular,
     textAlign: 'left',
-    paddingHorizontal: 12,
+    paddingHorizontal: SPACING.lg,
     textAlignVertical: 'center',
   },
   metricPickerWrapper: {
@@ -245,15 +246,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     minHeight: 56,
     justifyContent: 'center',
-    paddingVertical: 4,
+    paddingVertical: SPACING.xs,
   },
   notesArea: {
     minHeight: 80,
     borderWidth: 1,
     borderColor: COLORS.borderGray2,
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     textAlignVertical: 'top',
     backgroundColor: COLORS.white,
     color: COLORS.textDark3,
@@ -265,7 +266,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.bgDark,
-    marginTop: 6,
+    marginTop: SPACING.xxs,
   },
   saveButtonText: {
     color: COLORS.white,
