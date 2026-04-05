@@ -3,6 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import COLORS from '../constants/colors';
 import { addExercise, deleteExercise, getExercises, updateExercise } from '../db/database';
 import type { Exercise } from '../types';
 
@@ -109,7 +110,7 @@ export function SettingsScreen() {
             placeholder="種目名"
           />
           <Pressable onPress={() => void onAdd()} style={styles.addButton} accessibilityLabel="追加">
-            <Ionicons name="add" size={18} color="#ffffff" />
+            <Ionicons name="add" size={18} color={COLORS.white} />
           </Pressable>
         </View>
       </View>
@@ -135,7 +136,7 @@ export function SettingsScreen() {
               <View style={styles.iconRow}>
                 {isEditing ? (
                   <Pressable onPress={() => void onSaveEdit()} style={styles.iconButton} accessibilityLabel="保存">
-                    <Ionicons name="checkmark" size={18} color="#175fe8" />
+                    <Ionicons name="checkmark" size={18} color={COLORS.primary} />
                   </Pressable>
                 ) : (
                   <Pressable
@@ -146,12 +147,12 @@ export function SettingsScreen() {
                     style={styles.iconButton}
                     accessibilityLabel="編集"
                   >
-                    <Ionicons name="pencil" size={18} color="#243b53" />
+                    <Ionicons name="pencil" size={18} color={COLORS.textDark} />
                   </Pressable>
                 )}
 
                 <Pressable onPress={() => onDelete(exercise)} style={styles.iconButton} accessibilityLabel="削除">
-                  <Ionicons name="trash" size={18} color="#cc2b52" />
+                  <Ionicons name="trash" size={18} color={COLORS.danger} />
                 </Pressable>
               </View>
             </View>
@@ -167,61 +168,61 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 8,
     gap: 16,
-    backgroundColor: '#f6f8fb',
+    backgroundColor: COLORS.backgroundLight,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#102542',
+    color: COLORS.textPrimary,
   },
   description: {
-    color: '#334e68',
+    color: COLORS.textSecondary,
   },
   block: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     borderRadius: 12,
     padding: 12,
     gap: 8,
   },
   label: {
     fontWeight: '600',
-    color: '#102542',
+    color: COLORS.textPrimary,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d9e2ec',
+    borderColor: COLORS.border,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
   },
   card: {
     borderWidth: 1,
-    borderColor: '#d9e2ec',
+    borderColor: COLORS.border,
     borderRadius: 8,
     padding: 8,
     gap: 6,
   },
   cardTitle: {
     fontWeight: '600',
-    color: '#102542',
+    color: COLORS.textPrimary,
   },
   listRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#d9e2ec',
+    borderColor: COLORS.border,
     borderRadius: 8,
     paddingVertical: 6,
     paddingHorizontal: 8,
     marginBottom: 6,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
   },
   listText: {
     flex: 1,
     fontWeight: '600',
-    color: '#102542',
+    color: COLORS.textPrimary,
     fontSize: 13,
   },
   listInput: {
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     fontSize: 14,
     borderWidth: 1,
-    borderColor: '#e6eef8',
+    borderColor: COLORS.borderLight,
     borderRadius: 6,
   },
   iconRow: {
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#175fe8',
+    backgroundColor: COLORS.primary,
     borderRadius: 8,
     marginLeft: 8,
   },
@@ -270,22 +271,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonPrimary: {
-    backgroundColor: '#175fe8',
+    backgroundColor: COLORS.primary,
   },
   buttonDanger: {
-    backgroundColor: '#cc2b52',
+    backgroundColor: COLORS.danger,
   },
   buttonGhost: {
     borderWidth: 1,
-    borderColor: '#bcccdc',
-    backgroundColor: '#fff',
+    borderColor: COLORS.borderMuted,
+    backgroundColor: COLORS.white,
   },
   buttonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: '700',
   },
   buttonGhostText: {
-    color: '#243b53',
+    color: COLORS.textDark,
     fontWeight: '600',
   },
 });

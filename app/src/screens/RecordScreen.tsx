@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import TrainingForm from '../components/TrainingForm';
+import COLORS from '../constants/colors';
 import { addHistories, getExercises } from '../db/database';
 import { parseTrainingWithGemini } from '../services/geminiService';
 import type { Exercise } from '../types';
@@ -91,20 +92,20 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     paddingBottom: 80,
     gap: 12,
-    backgroundColor: '#f4f4f5',
+    backgroundColor: COLORS.surface,
   },
   title: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#14151e',
+    color: COLORS.textHeavy,
     marginTop: 6,
   },
   voiceBlock: {
-    backgroundColor: '#dfe3f4',
+    backgroundColor: COLORS.borderLight,
     borderRadius: 12,
     padding: 8,
     borderWidth: 1,
-    borderColor: '#d3d9f1',
+    borderColor: COLORS.border,
     gap: 8,
   },
   voiceHeader: {
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   voiceTitle: {
-    color: '#2f339f',
+    color: COLORS.accentDark,
     fontWeight: '700',
     fontSize: 12,
   },
@@ -122,15 +123,15 @@ const styles = StyleSheet.create({
   },
   voiceTextArea: {
     minHeight: 64,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.border,
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 8,
     paddingRight: 48,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     fontSize: 14,
-    color: '#1f2430',
+    color: COLORS.textDark2,
     textAlignVertical: 'top',
   },
   micFab: {
@@ -144,20 +145,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   micFabPrimary: {
-    backgroundColor: '#4d3ff0',
+    backgroundColor: COLORS.accent,
   },
   micFabDanger: {
-    backgroundColor: '#d64545',
+    backgroundColor: COLORS.dangerAlt,
   },
   parseButton: {
     borderRadius: 10,
     minHeight: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#4d3ff0',
+    backgroundColor: COLORS.accent,
   },
   parseButtonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: '700',
     fontSize: 11,
   },
@@ -171,27 +172,27 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: '700',
-    color: '#30303a',
+    color: COLORS.textMutedLight,
     fontSize: 16,
   },
   muted: {
-    color: '#74757d',
+    color: COLORS.textMuted,
     fontWeight: '500',
     fontSize: 14,
   },
   noteOptional: {
-    color: '#92939a',
+    color: COLORS.textMutedLight,
     fontSize: 14,
     fontWeight: '500',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    backgroundColor: '#fff',
-    color: '#10111a',
+    backgroundColor: COLORS.white,
+    color: COLORS.textBlack,
     fontSize: 15,
     fontWeight: '600',
     minHeight: 56,
@@ -203,10 +204,10 @@ const styles = StyleSheet.create({
   
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 14,
     overflow: 'hidden',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     minHeight: 56,
     justifyContent: 'center',
     paddingVertical: 4,
@@ -221,14 +222,14 @@ const styles = StyleSheet.create({
   },
   metricInput: {
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 12,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     minHeight: 64,
     paddingVertical: 8,
     fontSize: 18,
     lineHeight: 22,
-    color: '#1b1c26',
+    color: COLORS.textDark3,
     fontWeight: '400',
     textAlign: 'left',
     paddingHorizontal: 12,
@@ -236,10 +237,10 @@ const styles = StyleSheet.create({
   },
   metricPickerWrapper: {
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     minHeight: 56,
     justifyContent: 'center',
     paddingVertical: 4,
@@ -247,13 +248,13 @@ const styles = StyleSheet.create({
   notesArea: {
     minHeight: 80,
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 8,
     textAlignVertical: 'top',
-    backgroundColor: '#fff',
-    color: '#1b1c26',
+    backgroundColor: COLORS.white,
+    color: COLORS.textDark3,
     fontSize: 14,
   },
   saveButton: {
@@ -261,11 +262,11 @@ const styles = StyleSheet.create({
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#151721',
+    backgroundColor: COLORS.bgDark,
     marginTop: 6,
   },
   saveButtonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: '700',
     fontSize: 18,
   },
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   errorText: {
-    color: '#d64545',
+    color: COLORS.dangerAlt,
     fontSize: 18,
   },
 });

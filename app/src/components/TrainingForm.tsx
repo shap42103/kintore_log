@@ -3,6 +3,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import COLORS from '../constants/colors';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import type { Exercise } from '../types';
 
@@ -158,7 +159,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
     <View style={styles.container}>
       <View style={styles.voiceBlock}>
         <View style={styles.voiceHeader}>
-          <Feather name="file-text" size={16} color="#3f3aa8" />
+          <Feather name="file-text" size={16} color={COLORS.mutedAccent} />
           <Text style={styles.voiceTitle}>トレーニング内容</Text>
         </View>
 
@@ -175,7 +176,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
             style={[styles.micFab, speech.isListening ? styles.micFabDanger : styles.micFabPrimary]}
             onPress={speech.isListening ? speech.stop : speech.start}
           >
-            <Ionicons name="mic" size={18} color="#fff" />
+            <Ionicons name="mic" size={18} color={COLORS.white} />
           </Pressable>
         </View>
 
@@ -203,7 +204,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
             }
           }}
         >
-          {isParsing ? <ActivityIndicator color="#fff" /> : <Text style={styles.parseButtonText}>テキストを解析</Text>}
+          {isParsing ? <ActivityIndicator color={COLORS.white} /> : <Text style={styles.parseButtonText}>テキストを解析</Text>}
         </Pressable>
 
         {speech.error ? <Text style={styles.errorText}>{speech.error}</Text> : null}
@@ -213,7 +214,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
         <Text style={styles.label}>日時</Text>
         <View style={styles.dateRow}>
           <Pressable style={styles.input} onPress={() => setShowDatePicker(true)}>
-            <Text style={{ fontSize: 20, fontWeight: '400', color: '#111' }}>{formatDateLabel}</Text>
+            <Text style={{ fontSize: 20, fontWeight: '400', color: COLORS.textBlack }}>{formatDateLabel}</Text>
           </Pressable>
           {showDatePicker && (
             <DateTimePicker
@@ -243,7 +244,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>種目</Text>
         <View style={styles.pickerWrapper}>
-          <Picker selectedValue={exerciseId} onValueChange={(value) => setExerciseId(Number(value))} style={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
+          <Picker selectedValue={exerciseId} onValueChange={(value) => setExerciseId(Number(value))} style={{ color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700' }} itemStyle={{ color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700' }}>
             <Picker.Item label="種目を選択" value={0} />
             {exercises.map((exercise) => (
               <Picker.Item key={exercise.id} label={exercise.name} value={exercise.id} />
@@ -276,9 +277,9 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
                   return next;
                 })
               }
-              style={{ padding: 8, borderRadius: 8, backgroundColor: isBodyweight ? '#4d3ff0' : '#ededf2', marginRight: 4 }}
-            >
-              <Text style={{ color: isBodyweight ? '#fff' : '#333', fontWeight: '700' }}>自重</Text>
+              style={{ padding: 8, borderRadius: 8, backgroundColor: isBodyweight ? COLORS.accent : COLORS.bgMuted, marginRight: 4 }}
+            >x
+              <Text style={{ color: isBodyweight ? COLORS.white : COLORS.textDarkAlt, fontWeight: '700' }}>自重</Text>
             </Pressable>
           </View>
         </View>
@@ -286,7 +287,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
         <View style={[styles.metricBox, { flex: metricFlexes?.reps ?? 1.0, alignItems: 'flex-end' }]}>
           <Text style={[styles.label, { alignSelf: 'flex-start' }]}>回数</Text>
           <View style={[styles.metricPickerWrapper, { width: '100%', alignItems: 'flex-end' }]}>
-            <Picker key={'reps-' + pickerKey} selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ width: 84, color: '#111', fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
+            <Picker key={'reps-' + pickerKey} selectedValue={reps} onValueChange={(v) => setReps(Number(v))} style={{ width: 84, color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700' }}>
                 {Array.from({ length: 21 }).map((_, i) => (
                   <Picker.Item key={i} label={String(i)} value={i} />
                 ))}
@@ -297,7 +298,7 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
         <View style={[styles.metricBox, { flex: metricFlexes?.sets ?? 1.0, alignItems: 'flex-end' }]}>
           <Text style={[styles.label, { alignSelf: 'flex-start' }]}>セット</Text>
           <View style={[styles.metricPickerWrapper, { width: '100%', alignItems: 'flex-end' }]}>
-            <Picker key={'sets-' + pickerKey} selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ width: 84, color: '#111', fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: '#111', fontSize: 18, height: 56, fontWeight: '700' }}>
+            <Picker key={'sets-' + pickerKey} selectedValue={sets} onValueChange={(v) => setSets(Number(v))} style={{ width: 84, color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700', textAlign: 'right' }} itemStyle={{ color: COLORS.textBlack, fontSize: 18, height: 56, fontWeight: '700' }}>
                 {Array.from({ length: 11 }).map((_, i) => (
                   <Picker.Item key={i} label={String(i)} value={i} />
                 ))}
@@ -329,28 +330,28 @@ export default function TrainingForm({ exercises, initial = {}, onAnalyze, onSav
           setIsSaving(false);
         }
       }}>
-        {isSaving ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveButtonText}>{saveLabel}</Text>}
+        {isSaving ? <ActivityIndicator color={COLORS.white} /> : <Text style={styles.saveButtonText}>{saveLabel}</Text>}
       </Pressable>
 
       {onClose ? (
-        <Pressable style={[styles.saveButton, { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', marginTop: 8 }]} onPress={onClose}>
-          <Text style={{ color: '#333' }}>閉じる</Text>
+        <Pressable style={[styles.saveButton, { backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.mutedBorder, marginTop: 8 }]} onPress={onClose}>
+          <Text style={{ color: COLORS.textDarkAlt }}>閉じる</Text>
         </Pressable>
       ) : null}
       <Modal visible={debugModalVisible} animationType="slide" onRequestClose={() => setDebugModalVisible(false)}>
         <ScrollView contentContainerStyle={{ padding: 16 }}>
           <Text style={{ fontWeight: '700', fontSize: 18, marginBottom: 8 }}>解析結果（デバッグ）</Text>
-          <Text style={{ fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', backgroundColor: '#f6f6f6', padding: 12, borderRadius: 8 }}>{JSON.stringify(debugCandidate ?? {}, null, 2)}</Text>
+          <Text style={{ fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', backgroundColor: COLORS.codeBg, padding: 12, borderRadius: 8 }}>{JSON.stringify(debugCandidate ?? {}, null, 2)}</Text>
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
             <Pressable style={[styles.saveButton, { flex: 1 }]} onPress={() => handleDebugApply(true)}>
               <Text style={styles.saveButtonText}>適用する</Text>
             </Pressable>
-            <Pressable style={[styles.saveButton, { flex: 1, backgroundColor: '#ddd' }]} onPress={() => handleDebugApply(false)}>
-              <Text style={{ color: '#333', fontWeight: '700' }}>破棄</Text>
+            <Pressable style={[styles.saveButton, { flex: 1, backgroundColor: COLORS.mutedBorder }]} onPress={() => handleDebugApply(false)}>
+              <Text style={{ color: COLORS.textDarkAlt, fontWeight: '700' }}>破棄</Text>
             </Pressable>
           </View>
           <Pressable style={{ marginTop: 12 }} onPress={() => setDebugModalVisible(false)}>
-            <Text style={{ color: '#666' }}>閉じる</Text>
+            <Text style={{ color: COLORS.textGray }}>閉じる</Text>
           </Pressable>
         </ScrollView>
       </Modal>
@@ -364,14 +365,14 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     paddingBottom: 24,
     gap: 12,
-    backgroundColor: '#f4f4f5',
+    backgroundColor: COLORS.surface,
   },
   voiceBlock: {
-    backgroundColor: '#dfe3f4',
+    backgroundColor: COLORS.borderLighter,
     borderRadius: 12,
     padding: 8,
     borderWidth: 1,
-    borderColor: '#d3d9f1',
+    borderColor: COLORS.borderGray,
     gap: 8,
   },
   voiceHeader: {
@@ -380,7 +381,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   voiceTitle: {
-    color: '#2f339f',
+    color: COLORS.accentDark,
     fontWeight: '700',
     fontSize: 12,
   },
@@ -389,15 +390,15 @@ const styles = StyleSheet.create({
   },
   voiceTextArea: {
     minHeight: 64,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 8,
     paddingRight: 48,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     fontSize: 14,
-    color: '#1f2430',
+    color: COLORS.textDark3,
     textAlignVertical: 'top',
   },
   micFab: {
@@ -411,20 +412,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   micFabPrimary: {
-    backgroundColor: '#4d3ff0',
+    backgroundColor: COLORS.accent,
   },
   micFabDanger: {
-    backgroundColor: '#d64545',
+    backgroundColor: COLORS.dangerAlt,
   },
   parseButton: {
     borderRadius: 10,
     minHeight: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#4d3ff0',
+    backgroundColor: COLORS.accent,
   },
   parseButtonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: '700',
     fontSize: 11,
   },
@@ -438,27 +439,27 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: '700',
-    color: '#30303a',
+    color: COLORS.textMutedLight,
     fontSize: 16,
   },
   muted: {
-    color: '#74757d',
+    color: COLORS.textMuted,
     fontWeight: '500',
     fontSize: 14,
   },
   noteOptional: {
-    color: '#92939a',
+    color: COLORS.textMutedLight,
     fontSize: 14,
     fontWeight: '500',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    backgroundColor: '#fff',
-    color: '#10111a',
+    backgroundColor: COLORS.white,
+    color: COLORS.textBlack,
     fontSize: 15,
     fontWeight: '600',
     minHeight: 56,
@@ -469,10 +470,10 @@ const styles = StyleSheet.create({
   },
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 14,
     overflow: 'hidden',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     minHeight: 56,
     justifyContent: 'center',
     paddingVertical: 4,
@@ -487,14 +488,14 @@ const styles = StyleSheet.create({
   },
   metricInput: {
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 12,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     minHeight: 64,
     paddingVertical: 8,
     fontSize: 18,
     lineHeight: 22,
-    color: '#1b1c26',
+    color: COLORS.textDark3,
     fontWeight: '400',
     textAlign: 'left',
     paddingHorizontal: 12,
@@ -502,10 +503,10 @@ const styles = StyleSheet.create({
   },
   metricPickerWrapper: {
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     minHeight: 56,
     justifyContent: 'center',
     paddingVertical: 4,
@@ -513,13 +514,13 @@ const styles = StyleSheet.create({
   notesArea: {
     minHeight: 80,
     borderWidth: 1,
-    borderColor: '#d4d5dc',
+    borderColor: COLORS.borderGray2,
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 8,
     textAlignVertical: 'top',
-    backgroundColor: '#fff',
-    color: '#1b1c26',
+    backgroundColor: COLORS.white,
+    color: COLORS.textDark3,
     fontSize: 14,
   },
   saveButton: {
@@ -527,11 +528,11 @@ const styles = StyleSheet.create({
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#151721',
+    backgroundColor: COLORS.bgDark,
     marginTop: 6,
   },
   saveButtonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: '700',
     fontSize: 18,
   },
@@ -539,7 +540,8 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   errorText: {
-    color: '#d64545',
+    color: COLORS.dangerAlt,
     fontSize: 18,
   },
 });
+
