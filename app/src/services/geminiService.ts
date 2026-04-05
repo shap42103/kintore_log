@@ -119,16 +119,17 @@ export async function parseTrainingWithGemini(
 - 説明文は禁止、JSONのみ\n
 入力:\n${inputText}`;
 
-  const response = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-      }),
-    },
-  );
+  const baseUrl = "https://generativelanguage.googleapis.com/v1beta/models";
+  const model = "gemini-2.5-flash";
+  const url = `${baseUrl.replace(/\/$/, "")}/${model}:generateContent`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+    }),
+  });
 
   if (!response.ok) {
     const errorText = await response.text();
