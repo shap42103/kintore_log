@@ -16,6 +16,7 @@ import { Calendar, type DateData } from 'react-native-calendars';
 import TrainingForm from '../components/TrainingForm';
 import FONT_SIZES from '../constants/fontSizes';
 import FONT_WEIGHTS from '../constants/fontWeights';
+import COLORS from '../constants/colors';
 import {
   deleteHistory,
   getExercises,
@@ -82,7 +83,7 @@ export function HistoryScreen() {
       base[fromDate] = {
         ...(base[fromDate] ?? {}),
         selected: true,
-        selectedColor: '#175fe8',
+        selectedColor: COLORS.primary,
       };
     }
 
@@ -204,7 +205,7 @@ export function HistoryScreen() {
         <View style={styles.filterIconRow}>
           <Pressable style={styles.filterIconButton} onPress={() => setIsFilterOpen(true)} accessibilityLabel="フィルタ">
             <View style={styles.iconWithDot}>
-              <Ionicons name="funnel-outline" size={20} color="#175fe8" />
+              <Ionicons name="funnel-outline" size={20} color={COLORS.primary} />
               {isFilterApplied ? <View style={styles.filterDot} /> : null}
             </View>
           </Pressable>
@@ -232,8 +233,8 @@ export function HistoryScreen() {
                   <Picker
                     selectedValue={exerciseFilter ?? 0}
                     onValueChange={(value) => setExerciseFilter(value === 0 ? undefined : Number(value))}
-                    style={{ color: '#111' }}
-                    itemStyle={{ color: '#111' }}
+                    style={{ color: COLORS.textBlack }}
+                    itemStyle={{ color: COLORS.textBlack }}
                   >
                     <Picker.Item label="すべての種目" value={0} />
                     {exercises.map((exercise) => (
@@ -245,10 +246,10 @@ export function HistoryScreen() {
                 <Text style={[styles.label, { marginTop: 12 }]}>期間で絞り込み</Text>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
                   <Pressable style={styles.input} onPress={() => setShowFromPicker(true)}>
-                    <Text style={{ color: '#111' }}>{fromDate || '開始日'}</Text>
+                    <Text style={{ color: COLORS.textBlack }}>{fromDate || '開始日'}</Text>
                   </Pressable>
                   <Pressable style={styles.input} onPress={() => setShowToPicker(true)}>
-                    <Text style={{ color: '#111' }}>{toDate || '終了日'}</Text>
+                    <Text style={{ color: COLORS.textBlack }}>{toDate || '終了日'}</Text>
                   </Pressable>
                 </View>
                 {isPeriodInvalid ? <Text style={styles.periodError}>終了日は開始日以降に設定してください。</Text> : null}
@@ -325,10 +326,10 @@ export function HistoryScreen() {
               <Text style={styles.cardTitle}>{item.exerciseName}</Text>
               <View style={styles.actionRowRight}>
                 <Pressable style={styles.actionIconButton} onPress={() => openEdit(item)} accessibilityLabel="編集">
-                  <Ionicons name="pencil" size={18} color="#243b53" />
+                  <Ionicons name="pencil" size={18} color={COLORS.textDark} />
                 </Pressable>
                 <Pressable style={styles.actionIconButton} onPress={() => removeHistory(item.id)} accessibilityLabel="削除">
-                  <Ionicons name="trash" size={18} color="#cc2b52" />
+                  <Ionicons name="trash" size={18} color={COLORS.danger} />
                 </Pressable>
               </View>
             </View>
@@ -424,31 +425,31 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 8,
     gap: 16,
-    backgroundColor: '#f6f8fb',
+    backgroundColor: COLORS.backgroundLight,
   },
   title: {
     fontSize: FONT_SIZES.xxl,
     fontWeight: FONT_WEIGHTS.bold,
-    color: '#102542',
+    color: COLORS.textPrimary,
   },
   block: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     borderRadius: 12,
     padding: 12,
     gap: 8,
   },
   label: {
     fontWeight: '600',
-    color: '#102542',
+    color: COLORS.textPrimary,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d9e2ec',
+    borderColor: COLORS.border,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    backgroundColor: '#fff',
-    color: '#111',
+    backgroundColor: COLORS.white,
+    color: COLORS.textBlack,
   },
   filterSummaryRow: {
     flexDirection: 'column',
@@ -456,7 +457,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   filterSummaryText: {
-    color: '#334e68',
+    color: COLORS.textSecondary,
   },
   filterOverlay: {
     flex: 1,
@@ -464,7 +465,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   filterSheet: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 16,
@@ -483,7 +484,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   filterCloseText: {
-    color: '#74757d',
+    color: COLORS.textMuted,
     fontWeight: FONT_WEIGHTS.semibold,
   },
   filterBody: {
@@ -496,23 +497,23 @@ const styles = StyleSheet.create({
   },
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: '#d9e2ec',
+    borderColor: COLORS.border,
     borderRadius: 8,
     overflow: 'hidden',
   },
   card: {
     borderWidth: 1,
-    borderColor: '#d9e2ec',
+    borderColor: COLORS.border,
     borderRadius: 8,
     padding: 10,
     gap: 4,
   },
   cardTitle: {
     fontWeight: FONT_WEIGHTS.bold,
-    color: '#102542',
+    color: COLORS.textPrimary,
   },
   cardText: {
-    color: '#334e68',
+    color: COLORS.textSecondary,
   },
   row: {
     flexDirection: 'row',
@@ -535,22 +536,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonPrimary: {
-    backgroundColor: '#175fe8',
+    backgroundColor: COLORS.primary,
   },
   buttonDanger: {
-    backgroundColor: '#cc2b52',
+    backgroundColor: COLORS.danger,
   },
   buttonGhost: {
     borderWidth: 1,
-    borderColor: '#bcccdc',
-    backgroundColor: '#fff',
+    borderColor: COLORS.borderMuted,
+    backgroundColor: COLORS.white,
   },
   buttonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: FONT_WEIGHTS.bold,
   },
   buttonGhostText: {
-    color: '#243b53',
+    color: COLORS.textDark,
     fontWeight: FONT_WEIGHTS.semibold,
   },
   filterIconRow: {
@@ -562,11 +563,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#e6eef8',
+    borderColor: COLORS.borderLight,
   },
   iconBlock: {
     marginBottom: 8,
@@ -586,7 +587,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#d64545',
+    backgroundColor: COLORS.dangerAlt,
   },
   actionIconButton: {
     width: 36,
@@ -599,14 +600,14 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   periodError: {
-    color: '#d64545',
+    color: COLORS.dangerAlt,
     marginTop: 6,
     fontWeight: FONT_WEIGHTS.semibold,
   },
   modalContainer: {
     padding: 16,
     gap: 10,
-    backgroundColor: '#f6f8fb',
+    backgroundColor: COLORS.backgroundLight,
   },
   modalTitle: {
     marginTop: 36,
