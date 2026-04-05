@@ -3,6 +3,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import FONT_SIZES from '../constants/fontSizes';
+import FONT_WEIGHTS from '../constants/fontWeights';
 import { addExercise, deleteExercise, getExercises, updateExercise } from '../db/database';
 import type { Exercise } from '../types';
 
@@ -170,8 +172,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f6f8fb',
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: FONT_SIZES.xxl,
+    fontWeight: FONT_WEIGHTS.bold,
     color: '#102542',
   },
   description: {
@@ -184,7 +186,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   label: {
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
     color: '#102542',
   },
   input: {
@@ -203,7 +205,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   cardTitle: {
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
     color: '#102542',
   },
   listRow: {
@@ -220,15 +222,15 @@ const styles = StyleSheet.create({
   },
   listText: {
     flex: 1,
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
     color: '#102542',
-    fontSize: 13,
+    fontSize: FONT_SIZES.xs,
   },
   listInput: {
     flex: 1,
     paddingVertical: 6,
     paddingHorizontal: 8,
-    fontSize: 14,
+    fontSize: FONT_SIZES.sm,
     borderWidth: 1,
     borderColor: '#e6eef8',
     borderRadius: 6,
@@ -282,10 +284,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontWeight: '700',
+    fontWeight: FONT_WEIGHTS.bold,
   },
   buttonGhostText: {
     color: '#243b53',
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
   },
 });

@@ -4,6 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
+import FONT_SIZES from './src/constants/fontSizes';
+import FONT_WEIGHTS from './src/constants/fontWeights';
 
 import { initializeDatabase } from './src/db/database';
 import { HistoryScreen } from './src/screens/HistoryScreen';
@@ -54,8 +56,8 @@ export default function App() {
       <Tab.Navigator
         screenOptions={{
           headerTitleStyle: {
-            fontSize: 14,
-            fontWeight: '700',
+            fontSize: FONT_SIZES.sm,
+            fontWeight: FONT_WEIGHTS.bold,
           },
           headerStyle: {
             backgroundColor: '#ffffff',
@@ -77,8 +79,8 @@ export default function App() {
           tabBarActiveTintColor: '#4d3ff0',
           tabBarInactiveTintColor: '#7e8088',
           tabBarLabelStyle: {
-            fontSize: 12,
-            fontWeight: '700',
+            fontSize: FONT_SIZES.xs,
+            fontWeight: FONT_WEIGHTS.bold,
           },
         }}
       >

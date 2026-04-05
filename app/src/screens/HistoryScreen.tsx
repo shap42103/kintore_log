@@ -4,21 +4,23 @@ import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
 import {
-    Alert,
-    Modal, Platform, Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  Alert,
+  Modal, Platform, Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { Calendar, type DateData } from 'react-native-calendars';
 
 import TrainingForm from '../components/TrainingForm';
+import FONT_SIZES from '../constants/fontSizes';
+import FONT_WEIGHTS from '../constants/fontWeights';
 import {
-    deleteHistory,
-    getExercises,
-    getHistories,
-    updateHistory,
+  deleteHistory,
+  getExercises,
+  getHistories,
+  updateHistory,
 } from '../db/database';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import { parseTrainingWithGemini } from '../services/geminiService';
@@ -31,6 +33,7 @@ type EditForm = {
   weight: string;
   reps: string;
   sets: string;
+  isBodyweight?: boolean;
   notes: string;
 };
 
@@ -424,8 +427,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f6f8fb',
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: FONT_SIZES.xxl,
+    fontWeight: FONT_WEIGHTS.bold,
     color: '#102542',
   },
   block: {
@@ -473,15 +476,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   filterTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: FONT_SIZES.lg,
+    fontWeight: FONT_WEIGHTS.bold,
   },
   filterCloseButton: {
     padding: 8,
   },
   filterCloseText: {
     color: '#74757d',
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
   },
   filterBody: {
     gap: 12,
@@ -505,7 +508,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   cardTitle: {
-    fontWeight: '700',
+    fontWeight: FONT_WEIGHTS.bold,
     color: '#102542',
   },
   cardText: {
@@ -544,11 +547,11 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontWeight: '700',
+    fontWeight: FONT_WEIGHTS.bold,
   },
   buttonGhostText: {
     color: '#243b53',
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
   },
   filterIconRow: {
     flexDirection: 'row',
@@ -598,7 +601,7 @@ const styles = StyleSheet.create({
   periodError: {
     color: '#d64545',
     marginTop: 6,
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHTS.semibold,
   },
   modalContainer: {
     padding: 16,
